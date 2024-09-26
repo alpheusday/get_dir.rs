@@ -1,0 +1,7 @@
+[package]
+name = "__test__"
+edition = "2021"
+publish = false
+
+[dependencies]
+get_dir = { workspace = true }

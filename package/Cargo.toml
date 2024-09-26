@@ -1,0 +1,31 @@
+[package]
+name = "get_dir"
+version = "0.1.0"
+authors = ["Alpheus Tang"]
+edition = "2021"
+description = """
+A utility to get directory
+"""
+readme = "README.md"
+homepage = "https://github.com/alpheustangs/get_dir.rs"
+repository = "https://github.com/alpheustangs/get_dir.rs"
+license = "MIT"
+keywords = [
+    "get_dir",
+    "dir",
+    "directory",
+    "fs",
+    "util",
+]
+categories = [
+    "filesystem"
+]
+include = [
+    "src/*", 
+    "Cargo.toml",
+    "README.md",
+]
+
+[lib]
+name = "get_dir"
+path = "src/lib.rs"
