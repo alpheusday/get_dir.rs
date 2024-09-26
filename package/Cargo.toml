@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Alpheus Tang"]
 edition = "2021"
 description = """
-A utility to get directory
+An utility to get directory
 """
 readme = "README.md"
 homepage = "https://github.com/alpheustangs/get_dir.rs"
