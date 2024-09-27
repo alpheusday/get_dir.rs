@@ -4,7 +4,8 @@ An utility to get directory.
 
 A Directory searching utility that will check whether 
 the target file or directory exists in the directory. 
-The search process will start from the current directory and go to the root. 
+The search process will start from 
+the current directory and go to the root. 
 Therefore, targets in other subdirectories will not be found, 
 but a better performance is expected.
 
@@ -28,6 +29,5 @@ get_dir_by_target(Target {
 
 ## License
 
-This project is MIT licensed, 
-you can find the license file 
+This project is MIT licensed, you can find the license file 
 [here](https://github.com/alpheustangs/get_dir.rs/blob/main/LICENSE).
