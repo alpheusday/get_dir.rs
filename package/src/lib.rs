@@ -4,9 +4,9 @@
 //!
 //! A Directory searching utility that will check whether
 //! the target file or directory exists in the directory.
-//! The search process will start from the current directory and go to the root.
-//! Therefore, targets in other subdirectories will not be found,
-//! but a better performance is expected.
+//! The search process will start from the current directory 
+//! and go to the root. Therefore, targets in other subdirectories 
+//! will not be found, but a better performance is expected.
 //!
 //! ## Usage
 //!
