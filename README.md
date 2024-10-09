@@ -2,7 +2,7 @@
 
 An utility to get directory.
 
-A Directory searching utility that will check whether the target file or directory exists in the directory. The search process will start from the current directory and go to the root. Therefore, targets in other subdirectories will not be found, but a better performance is expected.
+This utility searches for a target directory by checking for any directories or files that match the provided input.
 
 ## Installation
 
@@ -23,9 +23,23 @@ use get_dir::{
     get_dir_by_target,
 };
 
-// Get the directory of the `LICENSE` file located in.
 get_dir_by_target(Target { 
-    name: "LICENSE".to_string(), 
+    name: "src".to_string(), 
+    ty: TargetType::Dir,
+});
+```
+
+Or get directory by target in reverse with the following code:
+
+```rust
+use get_dir::{
+    Target,
+    TargetType,
+    get_dir_by_target_reverse,
+};
+
+get_dir_by_target_reverse(Target {
+    name: "LICENSE".to_string(),
     ty: TargetType::File,
 });
 ```
