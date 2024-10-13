@@ -24,7 +24,7 @@ use get_dir::{
 };
 
 get_dir_by_target(Target { 
-    name: "src".to_string(), 
+    name: "src", 
     ty: TargetType::Dir,
 });
 ```
@@ -39,7 +39,7 @@ use get_dir::{
 };
 
 get_dir_by_target_reverse(Target {
-    name: "LICENSE".to_string(),
+    name: "LICENSE",
     ty: TargetType::File,
 });
 ```

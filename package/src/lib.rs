@@ -17,7 +17,7 @@
 //! };
 //!
 //! get_dir_by_target(Target {
-//!     name: "src".to_string(),
+//!     name: "src",
 //!     ty: TargetType::Dir,
 //! });
 //! ```
@@ -32,7 +32,7 @@
 //! };
 //!
 //! get_dir_by_target_reverse(Target {
-//!     name: "LICENSE".to_string(),
+//!     name: "LICENSE",
 //!     ty: TargetType::File,
 //! });
 //! ```
@@ -44,18 +44,20 @@ use std::{
     path::{Path, PathBuf},
 };
 
-/// Enum to determine whether the target is a file or a directory.
-#[derive(Clone)]
+/// Enum to determine whether the target is a directory or a file.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TargetType {
-    File,
+    /// The target is a directory.
     Dir,
+    /// The target is a file.
+    File,
 }
 
 /// Target struct for searching functions.
-#[derive(Clone)]
-pub struct Target {
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Target<'a> {
     /// The name of the target.
-    pub name: String,
+    pub name: &'a str,
     /// The type of the target.
     pub ty: TargetType,
 }
@@ -75,7 +77,7 @@ fn search_targets(
     targets: &Vec<Target>,
 ) -> Option<PathBuf> {
     for target in targets {
-        let target_path: PathBuf = dir.join(&target.name);
+        let target_path: PathBuf = dir.join(target.name);
         if target_exists(&target_path, target) {
             return Some(dir.to_owned());
         }
@@ -136,7 +138,7 @@ pub fn get_dir_by_targets_reverse(targets: Vec<Target>) -> io::Result<PathBuf> {
 
     for ancestor in current.ancestors() {
         for target in &targets {
-            let target_path: PathBuf = ancestor.join(&target.name);
+            let target_path: PathBuf = ancestor.join(target.name);
             if target_exists(&target_path, target) {
                 return Ok(ancestor.to_path_buf());
             }
@@ -157,8 +159,8 @@ pub fn get_dir_by_target_reverse(target: Target) -> io::Result<PathBuf> {
 /// Use [`get_project_root`] to handle the error automatically.
 pub fn get_project_root_directory() -> io::Result<PathBuf> {
     get_dir_by_targets_reverse(vec![
-        Target { name: "target".to_string(), ty: TargetType::Dir },
-        Target { name: "Cargo.lock".to_string(), ty: TargetType::File },
+        Target { name: "target", ty: TargetType::Dir },
+        Target { name: "Cargo.lock", ty: TargetType::File },
     ])
 }
 

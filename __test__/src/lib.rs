@@ -9,7 +9,7 @@ mod tests {
     #[test]
     fn test_get_dir_by_target_dir() {
         let dir: PathBuf = get_dir_by_target(Target {
-            name: "src".to_string(),
+            name: "src",
             ty: get_dir::TargetType::Dir,
         })
         .unwrap();
@@ -22,7 +22,7 @@ mod tests {
     #[test]
     fn test_get_dir_by_target_file() {
         let dir: PathBuf = get_dir_by_target(Target {
-            name: "Cargo.toml".to_string(),
+            name: "Cargo.toml",
             ty: get_dir::TargetType::File,
         })
         .unwrap();
@@ -35,7 +35,7 @@ mod tests {
     #[test]
     fn test_get_dir_by_target_reverse_dir() {
         let dir: PathBuf = get_dir_by_target_reverse(Target {
-            name: "target".to_string(),
+            name: "target",
             ty: get_dir::TargetType::Dir,
         })
         .unwrap();
@@ -48,7 +48,7 @@ mod tests {
     #[test]
     fn test_get_dir_by_target_reverse_file() {
         let dir: PathBuf = get_dir_by_target_reverse(Target {
-            name: "LICENSE".to_string(),
+            name: "LICENSE",
             ty: get_dir::TargetType::File,
         })
         .unwrap();

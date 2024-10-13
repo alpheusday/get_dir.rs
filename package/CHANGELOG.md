@@ -1,3 +1,20 @@
+## 0.3.0 (2024-10-13)
+
+### Breaking Changes
+
+- Changes in accepted value type of `name` in `Target`:
+    - `String` => `&str`
+
+### What's New
+
+- Add different dervices for the following structs:
+    - `TargetType`
+    - `Target`
+
+### What's Changed
+
+- Updates in documentation
+
 ## 0.2.0 (2024-10-10)
 
 ### Breaking Changes
