@@ -1,41 +1,8 @@
-//! # Get Dir
-//!
-//! An utility to get directory.
-//!
-//! This utility searches for a target directory by checking
-//! for any directories or files that match the provided input.
-//!
-//! ## Usage
-//!
-//! Get directory by target with the following code:
-//!
-//! ```no_run
-//! use get_dir::{
-//!     Target,
-//!     TargetType,
-//!     get_dir_by_target,
-//! };
-//!
-//! get_dir_by_target(Target {
-//!     name: "src",
-//!     ty: TargetType::Dir,
-//! });
-//! ```
-//!
-//! Or get directory by target in reverse with the following code:
-//!
-//! ```no_run
-//! use get_dir::{
-//!     Target,
-//!     TargetType,
-//!     get_dir_by_target_reverse,
-//! };
-//!
-//! get_dir_by_target_reverse(Target {
-//!     name: "LICENSE",
-//!     ty: TargetType::File,
-//! });
-//! ```
+#[cfg(feature = "async-std")]
+pub mod async_std;
+
+#[cfg(feature = "tokio")]
+pub mod tokio;
 
 use std::{
     env::current_dir,
@@ -54,19 +21,17 @@ pub enum TargetType {
 }
 
 /// Target struct for searching functions.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Target<'a> {
-    /// The name of the target.
-    pub name: &'a str,
-    /// The type of the target.
-    pub ty: TargetType,
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Target {
+    pub name: String,
+    pub r#type: TargetType,
 }
 
 fn target_exists(
     path: &Path,
     target: &Target,
 ) -> bool {
-    match target.ty {
+    match target.r#type {
         | TargetType::Dir => path.is_dir(),
         | TargetType::File => path.is_file(),
     }
@@ -77,7 +42,7 @@ fn search_targets(
     targets: &Vec<Target>,
 ) -> Option<PathBuf> {
     for target in targets {
-        let target_path: PathBuf = dir.join(target.name);
+        let target_path: PathBuf = dir.join(&target.name);
         if target_exists(&target_path, target) {
             return Some(dir.to_owned());
         }
@@ -114,54 +79,84 @@ fn search_dir(
     Ok(None)
 }
 
-/// Search for the first directory containing any of the specified targets
-/// from the current directory downwards.
-pub fn get_dir_by_targets(targets: Vec<Target>) -> io::Result<PathBuf> {
-    let current: PathBuf = current_dir()?;
+/// Utility to get directory.
+#[derive(Debug, Clone)]
+pub struct GetDir {
+    pub targets: Vec<Target>,
+}
 
-    match search_dir(&current, &targets) {
-        | Ok(Some(path)) => Ok(path),
-        | _ => Err(io::Error::from(io::ErrorKind::NotFound)),
+impl GetDir {
+    /// Create a new GetDir instance.
+    pub fn new() -> Self {
+        GetDir { targets: Vec::new() }
     }
-}
 
-/// Search for the first directory containing the specified target
-/// from the current directory downwards.
-pub fn get_dir_by_target(target: Target) -> io::Result<PathBuf> {
-    get_dir_by_targets(vec![target])
-}
+    /// Create a new GetDir instance from another GetDir instance.
+    pub fn from(get_dir: GetDir) -> Self {
+        get_dir
+    }
 
-/// Search for the first directory containing any of the specified targets
-/// from the current directory upwards.
-pub fn get_dir_by_targets_reverse(targets: Vec<Target>) -> io::Result<PathBuf> {
-    let current: PathBuf = current_dir()?;
+    /// Add targets to the GetDir instance.
+    pub fn targets(
+        mut self,
+        targets: Vec<Target>,
+    ) -> Self {
+        self.targets.extend(targets);
+        self
+    }
 
-    for ancestor in current.ancestors() {
-        for target in &targets {
-            let target_path: PathBuf = ancestor.join(target.name);
-            if target_exists(&target_path, target) {
-                return Ok(ancestor.to_path_buf());
-            }
+    /// Add a target to the GetDir instance.
+    pub fn target(
+        mut self,
+        target: Target,
+    ) -> Self {
+        self.targets.push(target);
+        self
+    }
+
+    /// Get the first directory containing any of the specified targets.
+    pub fn get(&self) -> io::Result<PathBuf> {
+        let current: PathBuf = current_dir()?;
+
+        match search_dir(&current, &self.targets) {
+            | Ok(Some(path)) => Ok(path),
+            | _ => Err(io::Error::from(io::ErrorKind::NotFound)),
         }
     }
 
-    Err(io::Error::from(io::ErrorKind::NotFound))
+    /// Get the first directory containing any of the specified targets in reverse.
+    pub fn get_reverse(&self) -> io::Result<PathBuf> {
+        let current: PathBuf = current_dir()?;
+
+        for ancestor in current.ancestors() {
+            for target in &self.targets {
+                let target_path: PathBuf = ancestor.join(&target.name);
+                if target_exists(&target_path, target) {
+                    return Ok(ancestor.to_path_buf());
+                }
+            }
+        }
+
+        Err(io::Error::from(io::ErrorKind::NotFound))
+    }
 }
 
-/// Search for the first directory containing the specified target
-/// from the current directory upwards.
-pub fn get_dir_by_target_reverse(target: Target) -> io::Result<PathBuf> {
-    get_dir_by_targets_reverse(vec![target])
+impl Default for GetDir {
+    fn default() -> Self {
+        GetDir::new()
+    }
 }
 
 /// Get the project root directory by searching for
 /// the `target` folder and the `Cargo.lock` file.
 /// Use [`get_project_root`] to handle the error automatically.
 pub fn get_project_root_directory() -> io::Result<PathBuf> {
-    get_dir_by_targets_reverse(vec![
-        Target { name: "target", ty: TargetType::Dir },
-        Target { name: "Cargo.lock", ty: TargetType::File },
-    ])
+    GetDir::new()
+        .targets(vec![
+            Target { name: "target".to_string(), r#type: TargetType::Dir },
+            Target { name: "Cargo.lock".to_string(), r#type: TargetType::File },
+        ])
+        .get_reverse()
 }
 
 /// Get the project root directory by searching for
