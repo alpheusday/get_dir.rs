@@ -6,12 +6,13 @@
 - Remove `get_dir_by_target`
 - Remove `get_dir_by_targets_reverse`
 - Remove `get_dir_by_target_reverse`
+- Changes in the `Target` struct
 
 ### What's New
 
 - Add `GetDir` struct as a handler
-- Add support for `async-std` (require `async-std`/`async_std` feature) 
-- Add support for `tokio` (require `tokio` feature) 
+- Add support for `async-std` (require `async-std`/`async_std` feature)
+- Add support for `tokio` (require `tokio` feature)
 
 ### Migrating from 0.3.0 to 0.4.0
 
@@ -20,9 +21,10 @@ For getting directory by target, use `GetDir` struct.
 ```diff
 use get_dir::{
     Target,
-    TargetType,
+-   TargetType,
 -   get_dir_by_target,
 +   GetDir,
++   DirTarget,
 };
 
 - get_dir_by_target(Target { 
@@ -31,10 +33,11 @@ use get_dir::{
 - });
 
 + GetDir::new()
-+   .targets(vec![Target {
-+       name: "src".to_string(),  
-+       r#type: TargetType::Dir,
-+   }])
++   .targets(vec![
++       Target::Dir(DirTarget { 
++           name: "src".to_string(),
++       }),
++   ])
 +   .get();
 ```
 
@@ -43,9 +46,10 @@ For getting directory by target in reverse, use `GetDir` struct as well.
 ```diff
 use get_dir::{
     Target,
-    TargetType,
+-   TargetType,
 -   get_dir_by_target_reverse,
 +   GetDir,
++   FileTarget,
 };
 
 - get_dir_by_target_reverse(Target { 
@@ -54,10 +58,11 @@ use get_dir::{
 - });
 
 + GetDir::new()
-+   .targets(vec![Target {
-+       name: "LICENSE".to_string(),  
-+       r#type: TargetType::File,
-+   }])
++   .targets(vec![
++       Target::File(FileTarget { 
++           name: "LICENSE".to_string(),
++       }),
++   ])
 +  .get_reverse();
 ```
 

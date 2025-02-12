@@ -4,17 +4,14 @@ mod tests {
     use async_std::{fs::read_to_string, path::PathBuf};
 
     use get_dir::{
-        async_std::{get_project_root, AsyncGetterExt},
-        GetDir, Target,
+        async_std::{get_project_root, GetDirAsyncExt},
+        DirTarget, FileTarget, GetDir, Target,
     };
 
     #[tokio::test]
     async fn test_get_dir_by_target_dir() {
         let dir: PathBuf = GetDir::new()
-            .targets(vec![Target {
-                name: "src".to_string(),
-                r#type: get_dir::TargetType::Dir,
-            }])
+            .targets(vec![Target::Dir(DirTarget { name: "src".to_string() })])
             .get_async()
             .await
             .unwrap();
@@ -28,10 +25,9 @@ mod tests {
     #[tokio::test]
     async fn test_get_dir_by_target_file() {
         let dir: PathBuf = GetDir::new()
-            .targets(vec![Target {
+            .targets(vec![Target::File(FileTarget {
                 name: "Cargo.toml".to_string(),
-                r#type: get_dir::TargetType::File,
-            }])
+            })])
             .get_async()
             .await
             .unwrap();
@@ -45,10 +41,9 @@ mod tests {
     #[tokio::test]
     async fn test_get_dir_by_target_reverse_dir() {
         let dir: PathBuf = GetDir::new()
-            .targets(vec![Target {
+            .targets(vec![Target::Dir(DirTarget {
                 name: "target".to_string(),
-                r#type: get_dir::TargetType::Dir,
-            }])
+            })])
             .get_reverse_async()
             .await
             .unwrap();
@@ -62,10 +57,9 @@ mod tests {
     #[tokio::test]
     async fn test_get_dir_by_target_reverse_file() {
         let dir: PathBuf = GetDir::new()
-            .targets(vec![Target {
+            .targets(vec![Target::File(FileTarget {
                 name: "LICENSE".to_string(),
-                r#type: get_dir::TargetType::File,
-            }])
+            })])
             .get_reverse_async()
             .await
             .unwrap();

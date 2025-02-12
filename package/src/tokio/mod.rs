@@ -8,15 +8,31 @@ use tokio::{
     io,
 };
 
-use crate::{GetDir, Target, TargetType};
+use crate::{DirTarget, FileTarget, GetDir, Target};
 
 async fn target_exists(
     path: &Path,
     target: &Target,
 ) -> bool {
-    match target.r#type {
-        | TargetType::Dir => path.is_dir(),
-        | TargetType::File => path.is_file(),
+    match target {
+        | Target::Dir(tg) => {
+            let target_path: PathBuf = path.join(&tg.name);
+
+            if target_path.exists() && target_path.is_dir() {
+                return true;
+            }
+
+            false
+        },
+        | Target::File(tg) => {
+            let target_path: PathBuf = path.join(&tg.name);
+
+            if target_path.exists() && target_path.is_file() {
+                return true;
+            }
+
+            false
+        },
     }
 }
 
@@ -25,8 +41,7 @@ async fn search_targets(
     targets: &Vec<Target>,
 ) -> Option<PathBuf> {
     for target in targets {
-        let target_path: PathBuf = dir.join(&target.name);
-        if target_exists(&target_path, target).await {
+        if target_exists(dir, target).await {
             return Some(dir.to_owned());
         }
     }
@@ -64,7 +79,7 @@ async fn search_dir(
 }
 
 /// Trait for getting directory with tokio.
-pub trait AsyncGetterExt {
+pub trait GetDirAsyncExt {
     /// Get directory asynchronously.
     fn get_async(
         &self
@@ -76,7 +91,7 @@ pub trait AsyncGetterExt {
     ) -> impl std::future::Future<Output = io::Result<PathBuf>> + Send;
 }
 
-impl AsyncGetterExt for GetDir {
+impl GetDirAsyncExt for GetDir {
     async fn get_async(&self) -> io::Result<PathBuf> {
         let current: PathBuf = current_dir()?;
 
@@ -91,8 +106,7 @@ impl AsyncGetterExt for GetDir {
 
         for ancestor in current.ancestors() {
             for target in &self.targets {
-                let target_path: PathBuf = ancestor.join(&target.name);
-                if target_exists(&target_path, target).await {
+                if target_exists(ancestor, target).await {
                     return Ok(ancestor.to_path_buf());
                 }
             }
@@ -108,8 +122,8 @@ impl AsyncGetterExt for GetDir {
 pub async fn get_project_root_directory() -> io::Result<PathBuf> {
     GetDir::new()
         .targets(vec![
-            Target { name: "target".to_string(), r#type: TargetType::Dir },
-            Target { name: "Cargo.lock".to_string(), r#type: TargetType::File },
+            Target::Dir(DirTarget { name: "target".to_string() }),
+            Target::File(FileTarget { name: "Cargo.lock".to_string() }),
         ])
         .get_reverse_async()
         .await

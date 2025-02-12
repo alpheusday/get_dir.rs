@@ -10,16 +10,17 @@ Get directory by target with the following code:
 
 ```rust
 use get_dir::{
-    Target,
-    TargetType,
     GetDir,
+    Target,
+    DirTarget,
 };
 
 GetDir::new()
-    .targets(vec![Target {
-        name: "src".to_string(),  
-        r#type: TargetType::Dir,
-    }])
+    .targets(vec![
+        Target::Dir(DirTarget {
+            name: "src".to_string(),  
+        }),
+    ])
     .get();
 ```
 
@@ -27,16 +28,17 @@ Or get directory by target in reverse with the following code:
 
 ```rust
 use get_dir::{
-    Target,
-    TargetType,
     GetDir,
+    Target,
+    FileTarget,
 };
 
 GetDir::new()
-    .targets(vec![Target {
-        name: "LICENSE".to_string(),  
-        r#type: TargetType::File,
-    }])
+    .targets(vec![
+        Target::File(FileTarget {
+            name: "LICENSE".to_string(),  
+        }),
+    ])
     .get_reverse();
 ```
 
@@ -46,17 +48,18 @@ Async version also available with `async-std`/`async_std` and `tokio` features:
 // This is a `async-std` example
 
 use get_dir::{
-    Target,
-    TargetType,
     GetDir,
-    async_std::AsyncGetterExt,
+    Target,
+    DirTarget,
+    async_std::GetDirAsyncExt,
 };
 
 GetDir::new()
-    .targets(vec![Target {
-        name: "src".to_string(),  
-        r#type: TargetType::Dir,
-    }])
+    .targets(vec![
+        Target::Dir(DirTarget {
+            name: "src".to_string(),  
+        }),
+    ])
     .get_async()
     .await;
 ```
@@ -65,17 +68,18 @@ GetDir::new()
 // This is a `tokio` example
 
 use get_dir::{
-    Target,
-    TargetType,
     GetDir,
-    tokio::AsyncGetterExt,
+    Target,
+    DirTarget,
+    tokio::GetDirAsyncExt,
 };
 
 GetDir::new()
-    .targets(vec![Target {
-        name: "src".to_string(),  
-        r#type: TargetType::Dir,
-    }])
+    .targets(vec![
+        Target::Dir(DirTarget {
+            name: "src".to_string(),
+        }),
+    ])
     .get_async()
     .await;
 ```

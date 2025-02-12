@@ -6,15 +6,12 @@ pub mod tokio;
 mod tests {
     use std::{fs::read_to_string, path::PathBuf};
 
-    use get_dir::{get_project_root, GetDir, Target};
+    use get_dir::{get_project_root, DirTarget, FileTarget, GetDir, Target};
 
     #[test]
     fn test_get_dir_by_target_dir() {
         let dir: PathBuf = GetDir::new()
-            .targets(vec![Target {
-                name: "src".to_string(),
-                r#type: get_dir::TargetType::Dir,
-            }])
+            .targets(vec![Target::Dir(DirTarget { name: "src".to_string() })])
             .get()
             .unwrap();
 
@@ -26,10 +23,9 @@ mod tests {
     #[test]
     fn test_get_dir_by_target_file() {
         let dir: PathBuf = GetDir::new()
-            .targets(vec![Target {
+            .targets(vec![Target::File(FileTarget {
                 name: "Cargo.toml".to_string(),
-                r#type: get_dir::TargetType::File,
-            }])
+            })])
             .get()
             .unwrap();
 
@@ -41,10 +37,9 @@ mod tests {
     #[test]
     fn test_get_dir_by_target_reverse_dir() {
         let dir: PathBuf = GetDir::new()
-            .targets(vec![Target {
+            .targets(vec![Target::Dir(DirTarget {
                 name: "target".to_string(),
-                r#type: get_dir::TargetType::Dir,
-            }])
+            })])
             .get_reverse()
             .unwrap();
 
@@ -56,10 +51,9 @@ mod tests {
     #[test]
     fn test_get_dir_by_target_reverse_file() {
         let dir: PathBuf = GetDir::new()
-            .targets(vec![Target {
+            .targets(vec![Target::File(FileTarget {
                 name: "LICENSE".to_string(),
-                r#type: get_dir::TargetType::File,
-            }])
+            })])
             .get_reverse()
             .unwrap();
 

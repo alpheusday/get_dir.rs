@@ -1,3 +1,93 @@
+//! Get Dir
+//!
+//! An utility to get directory.
+//!
+//! This utility searches for a target directory by checking for any directories or files that match the provided input.
+//!
+//! ## Usage
+//!
+//! Get directory by target with the following code:
+//!
+//! ```rust
+//! use get_dir::{
+//!     GetDir,
+//!     Target,
+//!     DirTarget,
+//! };
+//!
+//! GetDir::new()
+//!     .targets(vec![
+//!         Target::Dir(DirTarget {
+//!             name: "src".to_string(),  
+//!         }),
+//!     ])
+//!     .get();
+//! ```
+//!
+//! Or get directory by target in reverse with the following code:
+//!
+//! ```rust
+//! use get_dir::{
+//!     GetDir,
+//!     Target,
+//!     FileTarget,
+//! };
+//!
+//! GetDir::new()
+//!     .targets(vec![
+//!         Target::File(FileTarget {
+//!             name: "LICENSE".to_string(),  
+//!         }),
+//!     ])
+//!     .get_reverse();
+//! ```
+//!     
+//! Async version also available with `async-std`/`async_std` and `tokio` features:
+//!
+//! ```rust
+//! // This is a `async-std` example
+//!
+//! use get_dir::{
+//!     GetDir,
+//!     Target,
+//!     FileTarget,
+//!     async_std::GetDirAsyncExt,
+//! };
+//!
+//! async fn example() {
+//!     GetDir::new()
+//!         .targets(vec![
+//!             Target::File(FileTarget {
+//!                 name: "LICENSE".to_string(),  
+//!             }),
+//!         ])
+//!         .get_reverse_async()
+//!         .await;
+//! }
+//! ```
+//!
+//! ```rust
+//! // This is a `tokio` example
+//!
+//! use get_dir::{
+//!     GetDir,
+//!     Target,
+//!     FileTarget,
+//!     tokio::GetDirAsyncExt,
+//! };
+//!
+//! async fn example() {
+//!     GetDir::new()
+//!         .targets(vec![
+//!             Target::File(FileTarget {
+//!                 name: "LICENSE".to_string(),  
+//!             }),
+//!         ])
+//!         .get_reverse_async()
+//!         .await;
+//! }
+//! ```
+
 #[cfg(feature = "async-std")]
 pub mod async_std;
 
@@ -11,29 +101,50 @@ use std::{
     path::{Path, PathBuf},
 };
 
-/// Enum to determine whether the target is a directory or a file.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum TargetType {
-    /// The target is a directory.
-    Dir,
-    /// The target is a file.
-    File,
+/// Directory target struct.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DirTarget {
+    pub name: String,
 }
 
-/// Target struct for searching functions.
+/// File target struct.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Target {
+pub struct FileTarget {
     pub name: String,
-    pub r#type: TargetType,
+}
+
+/// Enum to determine whether the target is a directory or a file.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Target {
+    /// The target is a directory.
+    Dir(DirTarget),
+    /// The target is a file.
+    File(FileTarget),
 }
 
 fn target_exists(
     path: &Path,
     target: &Target,
 ) -> bool {
-    match target.r#type {
-        | TargetType::Dir => path.is_dir(),
-        | TargetType::File => path.is_file(),
+    match target {
+        | Target::Dir(tg) => {
+            let target_path: PathBuf = path.join(&tg.name);
+
+            if target_path.exists() && target_path.is_dir() {
+                return true;
+            }
+
+            false
+        },
+        | Target::File(tg) => {
+            let target_path: PathBuf = path.join(&tg.name);
+
+            if target_path.exists() && target_path.is_file() {
+                return true;
+            }
+
+            false
+        },
     }
 }
 
@@ -42,8 +153,7 @@ fn search_targets(
     targets: &Vec<Target>,
 ) -> Option<PathBuf> {
     for target in targets {
-        let target_path: PathBuf = dir.join(&target.name);
-        if target_exists(&target_path, target) {
+        if target_exists(dir, target) {
             return Some(dir.to_owned());
         }
     }
@@ -130,8 +240,7 @@ impl GetDir {
 
         for ancestor in current.ancestors() {
             for target in &self.targets {
-                let target_path: PathBuf = ancestor.join(&target.name);
-                if target_exists(&target_path, target) {
+                if target_exists(ancestor, target) {
                     return Ok(ancestor.to_path_buf());
                 }
             }
@@ -153,8 +262,8 @@ impl Default for GetDir {
 pub fn get_project_root_directory() -> io::Result<PathBuf> {
     GetDir::new()
         .targets(vec![
-            Target { name: "target".to_string(), r#type: TargetType::Dir },
-            Target { name: "Cargo.lock".to_string(), r#type: TargetType::File },
+            Target::Dir(DirTarget { name: "target".to_string() }),
+            Target::File(FileTarget { name: "Cargo.lock".to_string() }),
         ])
         .get_reverse()
 }
