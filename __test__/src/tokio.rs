@@ -12,7 +12,7 @@ mod tests {
     #[tokio::test]
     async fn test_get_dir_by_target_dir() {
         let dir: PathBuf = GetDir::new()
-            .targets(vec![Target::Dir(DirTarget { name: "src".to_string() })])
+            .targets(vec![Target::Dir(DirTarget { name: "src" })])
             .get_async()
             .await
             .unwrap();
@@ -26,9 +26,7 @@ mod tests {
     #[tokio::test]
     async fn test_get_dir_by_target_file() {
         let dir: PathBuf = GetDir::new()
-            .targets(vec![Target::File(FileTarget {
-                name: "Cargo.toml".to_string(),
-            })])
+            .targets(vec![Target::File(FileTarget { name: "Cargo.toml" })])
             .get_async()
             .await
             .unwrap();
@@ -42,9 +40,7 @@ mod tests {
     #[tokio::test]
     async fn test_get_dir_by_target_reverse_dir() {
         let dir: PathBuf = GetDir::new()
-            .targets(vec![Target::Dir(DirTarget {
-                name: "target".to_string(),
-            })])
+            .targets(vec![Target::Dir(DirTarget { name: "target" })])
             .get_reverse_async()
             .await
             .unwrap();
@@ -58,9 +54,7 @@ mod tests {
     #[tokio::test]
     async fn test_get_dir_by_target_reverse_file() {
         let dir: PathBuf = GetDir::new()
-            .targets(vec![Target::File(FileTarget {
-                name: "LICENSE".to_string(),
-            })])
+            .targets(vec![Target::File(FileTarget { name: "LICENSE" })])
             .get_reverse_async()
             .await
             .unwrap();

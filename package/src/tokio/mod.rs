@@ -10,13 +10,13 @@ use tokio::{
 
 use crate::{DirTarget, FileTarget, GetDir, Target};
 
-async fn target_exists(
+async fn target_exists<'a>(
     path: &Path,
-    target: &Target,
+    target: &Target<'a>,
 ) -> bool {
     match target {
         | Target::Dir(tg) => {
-            let target_path: PathBuf = path.join(&tg.name);
+            let target_path: PathBuf = path.join(tg.name);
 
             if target_path.exists() && target_path.is_dir() {
                 return true;
@@ -25,7 +25,7 @@ async fn target_exists(
             false
         },
         | Target::File(tg) => {
-            let target_path: PathBuf = path.join(&tg.name);
+            let target_path: PathBuf = path.join(tg.name);
 
             if target_path.exists() && target_path.is_file() {
                 return true;
@@ -36,9 +36,9 @@ async fn target_exists(
     }
 }
 
-async fn search_targets(
+async fn search_targets<'a>(
     dir: &PathBuf,
-    targets: &Vec<Target>,
+    targets: &Vec<Target<'a>>,
 ) -> Option<PathBuf> {
     for target in targets {
         if target_exists(dir, target).await {
@@ -49,9 +49,9 @@ async fn search_targets(
     None
 }
 
-async fn search_dir(
+async fn search_dir<'a>(
     dir: &PathBuf,
-    targets: &Vec<Target>,
+    targets: &Vec<Target<'a>>,
 ) -> io::Result<Option<PathBuf>> {
     let mut entries: ReadDir = fs::read_dir(dir).await?;
 
@@ -91,7 +91,7 @@ pub trait GetDirAsyncExt {
     ) -> impl std::future::Future<Output = io::Result<PathBuf>> + Send;
 }
 
-impl GetDirAsyncExt for GetDir {
+impl GetDirAsyncExt for GetDir<'_> {
     async fn get_async(&self) -> io::Result<PathBuf> {
         let current: PathBuf = current_dir()?;
 
@@ -122,8 +122,8 @@ impl GetDirAsyncExt for GetDir {
 pub async fn get_project_root_directory() -> io::Result<PathBuf> {
     GetDir::new()
         .targets(vec![
-            Target::Dir(DirTarget { name: "target".to_string() }),
-            Target::File(FileTarget { name: "Cargo.lock".to_string() }),
+            Target::Dir(DirTarget { name: "target" }),
+            Target::File(FileTarget { name: "Cargo.lock" }),
         ])
         .get_reverse_async()
         .await

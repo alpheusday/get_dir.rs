@@ -18,7 +18,7 @@
 //! GetDir::new()
 //!     .targets(vec![
 //!         Target::Dir(DirTarget {
-//!             name: "src".to_string(),  
+//!             name: "src",  
 //!         }),
 //!     ])
 //!     .get();
@@ -36,7 +36,7 @@
 //! GetDir::new()
 //!     .targets(vec![
 //!         Target::File(FileTarget {
-//!             name: "LICENSE".to_string(),  
+//!             name: "LICENSE",  
 //!         }),
 //!     ])
 //!     .get_reverse();
@@ -58,7 +58,7 @@
 //!     GetDir::new()
 //!         .targets(vec![
 //!             Target::File(FileTarget {
-//!                 name: "LICENSE".to_string(),  
+//!                 name: "LICENSE",  
 //!             }),
 //!         ])
 //!         .get_reverse_async()
@@ -80,7 +80,7 @@
 //!     GetDir::new()
 //!         .targets(vec![
 //!             Target::File(FileTarget {
-//!                 name: "LICENSE".to_string(),  
+//!                 name: "LICENSE",  
 //!             }),
 //!         ])
 //!         .get_reverse_async()
@@ -103,23 +103,23 @@ use std::{
 
 /// Directory target struct.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct DirTarget {
-    pub name: String,
+pub struct DirTarget<'a> {
+    pub name: &'a str,
 }
 
 /// File target struct.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct FileTarget {
-    pub name: String,
+pub struct FileTarget<'a> {
+    pub name: &'a str,
 }
 
 /// Enum to determine whether the target is a directory or a file.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Target {
+pub enum Target<'a> {
     /// The target is a directory.
-    Dir(DirTarget),
+    Dir(DirTarget<'a>),
     /// The target is a file.
-    File(FileTarget),
+    File(FileTarget<'a>),
 }
 
 fn target_exists(
@@ -128,7 +128,7 @@ fn target_exists(
 ) -> bool {
     match target {
         | Target::Dir(tg) => {
-            let target_path: PathBuf = path.join(&tg.name);
+            let target_path: PathBuf = path.join(tg.name);
 
             if target_path.exists() && target_path.is_dir() {
                 return true;
@@ -137,7 +137,7 @@ fn target_exists(
             false
         },
         | Target::File(tg) => {
-            let target_path: PathBuf = path.join(&tg.name);
+            let target_path: PathBuf = path.join(tg.name);
 
             if target_path.exists() && target_path.is_file() {
                 return true;
@@ -191,25 +191,25 @@ fn search_dir(
 
 /// Utility to get directory.
 #[derive(Debug, Clone)]
-pub struct GetDir {
-    pub targets: Vec<Target>,
+pub struct GetDir<'a> {
+    pub targets: Vec<Target<'a>>,
 }
 
-impl GetDir {
+impl<'a> GetDir<'a> {
     /// Create a new GetDir instance.
     pub fn new() -> Self {
         GetDir { targets: Vec::new() }
     }
 
     /// Create a new GetDir instance from another GetDir instance.
-    pub fn from(get_dir: GetDir) -> Self {
+    pub fn from(get_dir: GetDir<'a>) -> Self {
         get_dir
     }
 
     /// Add targets to the GetDir instance.
     pub fn targets(
         mut self,
-        targets: Vec<Target>,
+        targets: Vec<Target<'a>>,
     ) -> Self {
         self.targets.extend(targets);
         self
@@ -218,7 +218,7 @@ impl GetDir {
     /// Add a target to the GetDir instance.
     pub fn target(
         mut self,
-        target: Target,
+        target: Target<'a>,
     ) -> Self {
         self.targets.push(target);
         self
@@ -250,7 +250,7 @@ impl GetDir {
     }
 }
 
-impl Default for GetDir {
+impl Default for GetDir<'_> {
     fn default() -> Self {
         GetDir::new()
     }
@@ -262,8 +262,8 @@ impl Default for GetDir {
 pub fn get_project_root_directory() -> io::Result<PathBuf> {
     GetDir::new()
         .targets(vec![
-            Target::Dir(DirTarget { name: "target".to_string() }),
-            Target::File(FileTarget { name: "Cargo.lock".to_string() }),
+            Target::Dir(DirTarget { name: "target" }),
+            Target::File(FileTarget { name: "Cargo.lock" }),
         ])
         .get_reverse()
 }
