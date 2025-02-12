@@ -1,4 +1,4 @@
-//! Get Dir
+//! # Get Dir
 //!
 //! An utility to get directory.
 //!
