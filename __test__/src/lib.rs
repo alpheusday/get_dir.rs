@@ -6,7 +6,7 @@ pub mod tokio;
 mod tests {
     use std::{fs::read_to_string, path::PathBuf};
 
-    use get_dir::{get_project_root, DirTarget, FileTarget, GetDir, Target};
+    use get_dir::{DirTarget, FileTarget, GetDir, Target};
 
     #[test]
     fn test_get_dir_by_target_dir() {
@@ -50,15 +50,6 @@ mod tests {
             .targets(vec![Target::File(FileTarget { name: "LICENSE" })])
             .get_reverse()
             .unwrap();
-
-        let content: String = read_to_string(dir.join("Cargo.toml")).unwrap();
-
-        assert!(content.contains("[workspace.dependencies]"));
-    }
-
-    #[test]
-    fn test_get_project_root() {
-        let dir: PathBuf = get_project_root();
 
         let content: String = read_to_string(dir.join("Cargo.toml")).unwrap();
 

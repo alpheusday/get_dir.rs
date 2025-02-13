@@ -4,8 +4,7 @@ mod tests {
     use std::path::PathBuf;
 
     use get_dir::{
-        tokio::{get_project_root, GetDirAsyncExt},
-        DirTarget, FileTarget, GetDir, Target,
+        tokio::GetDirAsyncExt, DirTarget, FileTarget, GetDir, Target,
     };
     use tokio::fs::read_to_string;
 
@@ -58,16 +57,6 @@ mod tests {
             .get_reverse_async()
             .await
             .unwrap();
-
-        let content: String =
-            read_to_string(dir.join("Cargo.toml")).await.unwrap();
-
-        assert!(content.contains("[workspace.dependencies]"));
-    }
-
-    #[tokio::test]
-    async fn test_get_project_root() {
-        let dir: PathBuf = get_project_root().await;
 
         let content: String =
             read_to_string(dir.join("Cargo.toml")).await.unwrap();

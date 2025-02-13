@@ -6,6 +6,7 @@
 - Remove `get_dir_by_target`
 - Remove `get_dir_by_targets_reverse`
 - Remove `get_dir_by_target_reverse`
+- Remove `get_project_root`
 - Changes in the `Target` struct
 
 ### What's New

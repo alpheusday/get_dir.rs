@@ -8,7 +8,7 @@ use tokio::{
     io,
 };
 
-use crate::{DirTarget, FileTarget, GetDir, Target};
+use crate::{GetDir, Target};
 
 async fn target_exists<'a>(
     path: &Path,
@@ -114,24 +114,4 @@ impl GetDirAsyncExt for GetDir<'_> {
 
         Err(io::Error::from(io::ErrorKind::NotFound))
     }
-}
-
-/// Get the project root directory by searching for
-/// the `target` folder and the `Cargo.lock` file.
-/// Use [`get_project_root`] to handle the error automatically.
-pub async fn get_project_root_directory() -> io::Result<PathBuf> {
-    GetDir::new()
-        .targets(vec![
-            Target::Dir(DirTarget { name: "target" }),
-            Target::File(FileTarget { name: "Cargo.lock" }),
-        ])
-        .get_reverse_async()
-        .await
-}
-
-/// Get the project root directory by searching for
-/// the `target` folder and the `Cargo.lock` file.
-/// Use [`get_project_root_directory`] to handle the error manually.
-pub async fn get_project_root() -> PathBuf {
-    get_project_root_directory().await.expect("Failed to get project root")
 }

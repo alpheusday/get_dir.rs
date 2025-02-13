@@ -255,22 +255,3 @@ impl Default for GetDir<'_> {
         GetDir::new()
     }
 }
-
-/// Get the project root directory by searching for
-/// the `target` folder and the `Cargo.lock` file.
-/// Use [`get_project_root`] to handle the error automatically.
-pub fn get_project_root_directory() -> io::Result<PathBuf> {
-    GetDir::new()
-        .targets(vec![
-            Target::Dir(DirTarget { name: "target" }),
-            Target::File(FileTarget { name: "Cargo.lock" }),
-        ])
-        .get_reverse()
-}
-
-/// Get the project root directory by searching for
-/// the `target` folder and the `Cargo.lock` file.
-/// Use [`get_project_root_directory`] to handle the error manually.
-pub fn get_project_root() -> PathBuf {
-    get_project_root_directory().expect("Failed to get project root")
-}
