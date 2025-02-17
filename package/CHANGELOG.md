@@ -14,6 +14,7 @@
 - Add `GetDir` struct as a handler
 - Add support for `async-std` (require `async-std`/`async_std` feature)
 - Add support for `tokio` (require `tokio` feature)
+- Add support for specifying a target directory to run the process.
 
 ### Migrating from 0.3.0 to 0.4.0
 
@@ -39,7 +40,7 @@ use get_dir::{
 +           name: "src",
 +       }),
 +   ])
-+   .get();
++   .run();
 ```
 
 For getting directory by target in reverse, use `GetDir` struct as well.
@@ -64,7 +65,7 @@ use get_dir::{
 +           name: "LICENSE",
 +       }),
 +   ])
-+  .get_reverse();
++  .run_reverse();
 ```
 
 ## 0.3.0 (2024-10-13)

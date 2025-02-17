@@ -29,7 +29,7 @@ GetDir::new()
             name: "src",  
         }),
     ])
-    .get();
+    .run();
 ```
 
 Or get directory by target in reverse with the following code:
@@ -47,7 +47,7 @@ GetDir::new()
             name: "LICENSE",  
         }),
     ])
-    .get_reverse();
+    .run_reverse();
 ```
 
 Async version also available with `async-std`/`async_std` and `tokio` features:
@@ -68,7 +68,7 @@ GetDir::new()
             name: "src",  
         }),
     ])
-    .get_async()
+    .run_async()
     .await;
 ```
 
@@ -88,7 +88,7 @@ GetDir::new()
             name: "src",  
         }),
     ])
-    .get_async()
+    .run_async()
     .await;
 ```
 

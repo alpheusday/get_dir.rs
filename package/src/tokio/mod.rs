@@ -1,7 +1,4 @@
-use std::{
-    env::current_dir,
-    path::{Path, PathBuf},
-};
+use std::path::{Path, PathBuf};
 
 use tokio::{
     fs::{self, ReadDir},
@@ -52,59 +49,50 @@ async fn search_targets<'a>(
 async fn search_dir<'a>(
     dir: &PathBuf,
     targets: &Vec<Target<'a>>,
-) -> io::Result<Option<PathBuf>> {
-    let mut entries: ReadDir = fs::read_dir(dir).await?;
-
+) -> io::Result<PathBuf> {
     if let Some(found) = search_targets(dir, targets).await {
-        return Ok(Some(found));
+        return Ok(found);
     }
 
-    while let Ok(Some(entry)) = entries.next_entry().await {
+    let mut entries: ReadDir = fs::read_dir(dir).await?;
+
+    while let Some(entry) = entries.next_entry().await? {
         let current: PathBuf = entry.path();
 
         if current.is_dir() {
             if let Some(found) = search_targets(&current, targets).await {
-                return Ok(Some(found));
+                return Ok(found);
             }
 
-            if let Ok(Some(found)) =
-                Box::pin(search_dir(&current, targets)).await
-            {
-                return Ok(Some(found));
+            if let Ok(found) = Box::pin(search_dir(&current, targets)).await {
+                return Ok(found);
             }
         }
     }
 
-    Ok(None)
+    Err(io::Error::from(io::ErrorKind::NotFound))
 }
 
 /// Trait for getting directory with tokio.
 pub trait GetDirAsyncExt {
     /// Get directory asynchronously.
-    fn get_async(
+    fn run_async(
         &self
     ) -> impl std::future::Future<Output = io::Result<PathBuf>> + Send;
 
     /// Get directory in reverse asynchronously.
-    fn get_reverse_async(
+    fn run_reverse_async(
         &self
     ) -> impl std::future::Future<Output = io::Result<PathBuf>> + Send;
 }
 
 impl GetDirAsyncExt for GetDir<'_> {
-    async fn get_async(&self) -> io::Result<PathBuf> {
-        let current: PathBuf = current_dir()?;
-
-        match search_dir(&current, &self.targets).await {
-            | Ok(Some(path)) => Ok(path),
-            | _ => Err(io::Error::from(io::ErrorKind::NotFound)),
-        }
+    async fn run_async(&self) -> io::Result<PathBuf> {
+        search_dir(&self.dir, &self.targets).await
     }
 
-    async fn get_reverse_async(&self) -> io::Result<PathBuf> {
-        let current: PathBuf = current_dir()?;
-
-        for ancestor in current.ancestors() {
+    async fn run_reverse_async(&self) -> io::Result<PathBuf> {
+        for ancestor in self.dir.ancestors() {
             for target in &self.targets {
                 if target_exists(ancestor, target).await {
                     return Ok(ancestor.to_path_buf());

@@ -21,7 +21,7 @@
 //!             name: "src",  
 //!         }),
 //!     ])
-//!     .get();
+//!     .run();
 //! ```
 //!
 //! Or get directory by target in reverse with the following code:
@@ -39,7 +39,7 @@
 //!             name: "LICENSE",  
 //!         }),
 //!     ])
-//!     .get_reverse();
+//!     .run_reverse();
 //! ```
 //!     
 //! Async version also available with `async-std`/`async_std` and `tokio` features:
@@ -61,7 +61,7 @@
 //!                 name: "LICENSE",  
 //!             }),
 //!         ])
-//!         .get_reverse_async()
+//!         .run_reverse_async()
 //!         .await;
 //! }
 //! ```
@@ -83,7 +83,7 @@
 //!                 name: "LICENSE",  
 //!             }),
 //!         ])
-//!         .get_reverse_async()
+//!         .run_reverse_async()
 //!         .await;
 //! }
 //! ```
@@ -96,8 +96,7 @@ pub mod tokio;
 
 use std::{
     env::current_dir,
-    fs::{self, DirEntry, ReadDir},
-    io,
+    fs, io,
     path::{Path, PathBuf},
 };
 
@@ -164,46 +163,60 @@ fn search_targets(
 fn search_dir(
     dir: &PathBuf,
     targets: &Vec<Target>,
-) -> io::Result<Option<PathBuf>> {
-    let entries: ReadDir = fs::read_dir(dir)?;
-
+) -> io::Result<PathBuf> {
     if let Some(found) = search_targets(dir, targets) {
-        return Ok(Some(found));
+        return Ok(found);
     }
 
-    for entry in entries {
-        let entry: DirEntry = entry?;
-        let current: PathBuf = entry.path();
+    for entry in fs::read_dir(dir)? {
+        let current: PathBuf = entry?.path();
 
         if current.is_dir() {
             if let Some(found) = search_targets(&current, targets) {
-                return Ok(Some(found));
+                return Ok(found);
             }
 
-            if let Some(found) = search_dir(&current, targets)? {
-                return Ok(Some(found));
+            if let Ok(found) = search_dir(&current, targets) {
+                return Ok(found);
             }
         }
     }
 
-    Ok(None)
+    Err(io::Error::from(io::ErrorKind::NotFound))
 }
 
 /// Utility to get directory.
 #[derive(Debug, Clone)]
 pub struct GetDir<'a> {
+    pub dir: PathBuf,
     pub targets: Vec<Target<'a>>,
 }
 
 impl<'a> GetDir<'a> {
     /// Create a new GetDir instance.
     pub fn new() -> Self {
-        GetDir { targets: Vec::new() }
+        GetDir {
+            dir: match current_dir() {
+                | Ok(path) => path,
+                | Err(_) => PathBuf::new(),
+            },
+            targets: Vec::new(),
+        }
     }
 
     /// Create a new GetDir instance from another GetDir instance.
     pub fn from(get_dir: GetDir<'a>) -> Self {
         get_dir
+    }
+
+    /// Specific the directory to run the process.
+    /// By default, it runs in current directory.
+    pub fn directory<D: Into<PathBuf>>(
+        mut self,
+        dir: D,
+    ) -> Self {
+        self.dir = dir.into();
+        self
     }
 
     /// Add targets to the GetDir instance.
@@ -225,20 +238,13 @@ impl<'a> GetDir<'a> {
     }
 
     /// Get the first directory containing any of the specified targets.
-    pub fn get(&self) -> io::Result<PathBuf> {
-        let current: PathBuf = current_dir()?;
-
-        match search_dir(&current, &self.targets) {
-            | Ok(Some(path)) => Ok(path),
-            | _ => Err(io::Error::from(io::ErrorKind::NotFound)),
-        }
+    pub fn run(&self) -> io::Result<PathBuf> {
+        search_dir(&self.dir, &self.targets)
     }
 
     /// Get the first directory containing any of the specified targets in reverse.
-    pub fn get_reverse(&self) -> io::Result<PathBuf> {
-        let current: PathBuf = current_dir()?;
-
-        for ancestor in current.ancestors() {
+    pub fn run_reverse(&self) -> io::Result<PathBuf> {
+        for ancestor in self.dir.ancestors() {
             for target in &self.targets {
                 if target_exists(ancestor, target) {
                     return Ok(ancestor.to_path_buf());
