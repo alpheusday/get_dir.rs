@@ -8,8 +8,8 @@ use async_std::{
 use crate::{GetDir, Target};
 
 async fn target_exists<'a>(
-    path: &Path,
-    target: &Target<'a>,
+    path: &'a Path,
+    target: &'a Target<'a>,
 ) -> bool {
     match target {
         | Target::Dir(tg) => {
@@ -34,8 +34,8 @@ async fn target_exists<'a>(
 }
 
 async fn search_targets<'a>(
-    dir: &PathBuf,
-    targets: &Vec<Target<'a>>,
+    dir: &'a PathBuf,
+    targets: &'a Vec<Target<'a>>,
 ) -> Option<PathBuf> {
     for target in targets {
         if target_exists(dir, target).await {
@@ -47,8 +47,8 @@ async fn search_targets<'a>(
 }
 
 async fn search_dir<'a>(
-    dir: &PathBuf,
-    targets: &Vec<Target<'a>>,
+    dir: &'a PathBuf,
+    targets: &'a Vec<Target<'a>>,
 ) -> io::Result<PathBuf> {
     if let Some(found) = search_targets(dir, targets).await {
         return Ok(found);

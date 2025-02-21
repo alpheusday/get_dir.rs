@@ -6,7 +6,7 @@ mod tests {
     use async_std::{fs::read_to_string, path::PathBuf};
 
     use get_dir::{
-        async_std::GetDirAsyncExt, DirTarget, FileTarget, GetDir, Target,
+        DirTarget, FileTarget, GetDir, Target, async_std::GetDirAsyncExt,
     };
 
     #[tokio::test]
