@@ -10,7 +10,4 @@ async-std = "^1.13.0"
 
 [workspace.dependencies.get_dir]
 path = "./package"
-features = [
-    "async-std",
-    "tokio",
-]
+features = ["all"]
