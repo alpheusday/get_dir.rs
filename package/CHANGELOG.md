@@ -16,6 +16,10 @@
 - Add support for `tokio` (require `tokio` feature)
 - Add support for specifying a target directory to run the process.
 
+### What's Changed
+
+- Update to 2024 edition
+
 ### Migrating from 0.3.0 to 0.4.0
 
 For getting directory by target, use `GetDir` struct.

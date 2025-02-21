@@ -3,10 +3,11 @@ mod tests {
 
     use std::{env::current_dir, path::PathBuf};
 
+    use tokio::fs::read_to_string;
+    
     use get_dir::{
         DirTarget, FileTarget, GetDir, Target, tokio::GetDirAsyncExt,
     };
-    use tokio::fs::read_to_string;
 
     #[tokio::test]
     async fn test_get_dir_by_target_dir() {
