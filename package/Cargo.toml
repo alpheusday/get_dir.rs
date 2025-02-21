@@ -3,6 +3,7 @@ name = "get_dir"
 version = "0.4.0"
 authors = ["Alpheus Tang"]
 edition = "2024"
+rust-version = "1.85.0"
 description = """
 An utility to get directory
 """
@@ -30,13 +31,6 @@ include = [
 name = "get_dir"
 path = "src/lib.rs"
 
-[features]
-default = []
-async-std = ["dep:async-std"]
-async_std = ["async-std"]
-tokio = ["dep:tokio"]
-all = ["async-std", "tokio"]
-
 [dependencies.async-std]
 workspace = true
 optional = true
@@ -45,3 +39,10 @@ optional = true
 version = "^1.43.0"
 optional = true
 features = ["fs", "io-util"]
+
+[features]
+default = []
+async-std = ["dep:async-std"]
+async_std = ["async-std"]
+tokio = ["dep:tokio"]
+all = ["async-std", "tokio"]
