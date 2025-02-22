@@ -54,16 +54,16 @@
 //!     async_std::GetDirAsyncExt,
 //! };
 //!
-//! async fn example() {
-//!     GetDir::new()
-//!         .targets(vec![
-//!             Target::File(FileTarget {
-//!                 name: "LICENSE",  
-//!             }),
-//!         ])
-//!         .run_reverse_async()
-//!         .await;
-//! }
+//! # async fn example() {
+//! GetDir::new()
+//!     .targets(vec![
+//!         Target::File(FileTarget {
+//!             name: "LICENSE",  
+//!         }),
+//!     ])
+//!     .run_reverse_async()
+//!     .await;
+//! # }
 //! ```
 //!
 //! ```rust
@@ -76,21 +76,37 @@
 //!     tokio::GetDirAsyncExt,
 //! };
 //!
-//! async fn example() {
-//!     GetDir::new()
-//!         .targets(vec![
-//!             Target::File(FileTarget {
-//!                 name: "LICENSE",  
-//!             }),
-//!         ])
-//!         .run_reverse_async()
-//!         .await;
-//! }
+//! # async fn example() {
+//! GetDir::new()
+//!     .targets(vec![
+//!         Target::File(FileTarget {
+//!             name: "LICENSE",  
+//!         }),
+//!     ])
+//!     .run_reverse_async()
+//!     .await;
+//! # }
 //! ```
 
+/// Run asynchronously with `async-std`/`async_std` feature.
+///
+/// To use it, add the following code to the `Cargo.toml` file:
+///
+/// ```toml
+/// [dependencies]
+/// get_dir = { version = "*", features = ["async-std"] }
+/// ```
 #[cfg(feature = "async-std")]
 pub mod async_std;
 
+/// Run asynchronously with `tokio` feature.
+///
+/// To use it, add the following code to the `Cargo.toml` file:
+///
+/// ```toml
+/// [dependencies]
+/// get_dir = { version = "*", features = ["tokio"] }
+/// ```
 #[cfg(feature = "tokio")]
 pub mod tokio;
 

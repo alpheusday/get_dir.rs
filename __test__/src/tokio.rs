@@ -4,7 +4,7 @@ mod tests {
     use std::{env::current_dir, path::PathBuf};
 
     use tokio::fs::read_to_string;
-    
+
     use get_dir::{
         DirTarget, FileTarget, GetDir, Target, tokio::GetDirAsyncExt,
     };
