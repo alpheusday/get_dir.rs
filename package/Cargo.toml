@@ -27,6 +27,9 @@ include = [
     "README.md",
 ]
 
+[package.metadata.docs.rs]
+features = ["all"]
+
 [lib]
 name = "get_dir"
 path = "src/lib.rs"
