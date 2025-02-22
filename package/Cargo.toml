@@ -1,8 +1,9 @@
 [package]
 name = "get_dir"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["Alpheus Tang"]
-edition = "2021"
+edition = "2024"
+rust-version = "1.85.0"
 description = """
 An utility to get directory
 """
@@ -26,6 +27,25 @@ include = [
     "README.md",
 ]
 
+[package.metadata.docs.rs]
+features = ["all"]
+
 [lib]
 name = "get_dir"
 path = "src/lib.rs"
+
+[dependencies.async-std]
+workspace = true
+optional = true
+
+[dependencies.tokio]
+version = "^1.43.0"
+optional = true
+features = ["fs", "io-util"]
+
+[features]
+default = []
+async-std = ["dep:async-std"]
+async_std = ["async-std"]
+tokio = ["dep:tokio"]
+all = ["async-std", "tokio"]

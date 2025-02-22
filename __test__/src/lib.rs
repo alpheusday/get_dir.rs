@@ -1,18 +1,19 @@
+pub mod async_std;
+
+pub mod tokio;
+
 #[cfg(test)]
 mod tests {
-    use std::{fs::read_to_string, path::PathBuf};
+    use std::{env::current_dir, fs::read_to_string, path::PathBuf};
 
-    use get_dir::{
-        get_dir_by_target, get_dir_by_target_reverse, get_project_root, Target,
-    };
+    use get_dir::{DirTarget, FileTarget, GetDir, Target};
 
     #[test]
     fn test_get_dir_by_target_dir() {
-        let dir: PathBuf = get_dir_by_target(Target {
-            name: "src",
-            ty: get_dir::TargetType::Dir,
-        })
-        .unwrap();
+        let dir: PathBuf = GetDir::new()
+            .targets(vec![Target::Dir(DirTarget { name: "src" })])
+            .run()
+            .unwrap();
 
         let content: String = read_to_string(dir.join("Cargo.toml")).unwrap();
 
@@ -21,11 +22,10 @@ mod tests {
 
     #[test]
     fn test_get_dir_by_target_file() {
-        let dir: PathBuf = get_dir_by_target(Target {
-            name: "Cargo.toml",
-            ty: get_dir::TargetType::File,
-        })
-        .unwrap();
+        let dir: PathBuf = GetDir::new()
+            .targets(vec![Target::File(FileTarget { name: "Cargo.toml" })])
+            .run()
+            .unwrap();
 
         let content: String = read_to_string(dir.join("Cargo.toml")).unwrap();
 
@@ -34,11 +34,10 @@ mod tests {
 
     #[test]
     fn test_get_dir_by_target_reverse_dir() {
-        let dir: PathBuf = get_dir_by_target_reverse(Target {
-            name: "target",
-            ty: get_dir::TargetType::Dir,
-        })
-        .unwrap();
+        let dir: PathBuf = GetDir::new()
+            .targets(vec![Target::Dir(DirTarget { name: "target" })])
+            .run_reverse()
+            .unwrap();
 
         let content: String = read_to_string(dir.join("Cargo.toml")).unwrap();
 
@@ -47,11 +46,10 @@ mod tests {
 
     #[test]
     fn test_get_dir_by_target_reverse_file() {
-        let dir: PathBuf = get_dir_by_target_reverse(Target {
-            name: "LICENSE",
-            ty: get_dir::TargetType::File,
-        })
-        .unwrap();
+        let dir: PathBuf = GetDir::new()
+            .targets(vec![Target::File(FileTarget { name: "LICENSE" })])
+            .run_reverse()
+            .unwrap();
 
         let content: String = read_to_string(dir.join("Cargo.toml")).unwrap();
 
@@ -59,11 +57,15 @@ mod tests {
     }
 
     #[test]
-    fn test_get_project_root() {
-        let dir: PathBuf = get_project_root();
+    fn test_get_dir_by_target_file_in_specific_dir() {
+        let dir: PathBuf = GetDir::new()
+            .directory(current_dir().unwrap().join("..").join("package"))
+            .targets(vec![Target::File(FileTarget { name: "lib.rs" })])
+            .run()
+            .unwrap();
 
-        let content: String = read_to_string(dir.join("Cargo.toml")).unwrap();
+        let content: String = read_to_string(dir.join("lib.rs")).unwrap();
 
-        assert!(content.contains("[workspace.dependencies]"));
+        assert!(content.contains("# Get Dir"));
     }
 }

@@ -1,3 +1,77 @@
+## 0.4.0 (2025-02-22)
+
+### Breaking Changes
+
+- Remove `get_dir_by_targets`
+- Remove `get_dir_by_target`
+- Remove `get_dir_by_targets_reverse`
+- Remove `get_dir_by_target_reverse`
+- Remove `get_project_root`
+- Changes in the `Target` struct
+
+### What's New
+
+- Add `GetDir` struct as a handler
+- Add support for `async-std` (require `async-std`/`async_std` feature)
+- Add support for `tokio` (require `tokio` feature)
+- Add support for specifying a target directory to run the process.
+
+### What's Changed
+
+- Update to 2024 edition
+
+### Migrating from 0.3.0 to 0.4.0
+
+For getting directory by target, use `GetDir` struct.
+
+```diff
+use get_dir::{
+    Target,
+-   TargetType,
+-   get_dir_by_target,
++   GetDir,
++   DirTarget,
+};
+
+- get_dir_by_target(Target { 
+-   name: "src", 
+-   ty: TargetType::Dir,
+- });
+
++ GetDir::new()
++   .targets(vec![
++       Target::Dir(DirTarget { 
++           name: "src",
++       }),
++   ])
++   .run();
+```
+
+For getting directory by target in reverse, use `GetDir` struct as well.
+
+```diff
+use get_dir::{
+    Target,
+-   TargetType,
+-   get_dir_by_target_reverse,
++   GetDir,
++   FileTarget,
+};
+
+- get_dir_by_target_reverse(Target { 
+-   name: "LICENSE", 
+-   ty: TargetType::File,
+- });
+
++ GetDir::new()
++   .targets(vec![
++       Target::File(FileTarget { 
++           name: "LICENSE",
++       }),
++   ])
++  .run_reverse();
+```
+
 ## 0.3.0 (2024-10-13)
 
 ### Breaking Changes
