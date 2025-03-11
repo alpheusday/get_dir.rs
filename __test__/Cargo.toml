@@ -6,4 +6,4 @@ publish = false
 [dependencies]
 async-std = { workspace = true }
 get_dir = { workspace = true }
-tokio = { version = "^1.44.0", features = ["macros", "rt"] }
+tokio = { version = "^1.40.0", features = ["macros", "rt"] }
