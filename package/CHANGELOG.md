@@ -12,7 +12,7 @@
 - Remove `get_dir_by_target`
 - Remove `get_dir_by_targets_reverse`
 - Remove `get_dir_by_target_reverse`
-- Remove `get_project_root` (use [workspace_root](https://github.com/alpheus-day/workspace_root.rs) instead)
+- Remove `get_project_root` (use [workspace_root](https://github.com/alpheusday/workspace_root.rs) instead)
 - Changes in the `Target` struct
 
 ### What's New

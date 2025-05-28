@@ -8,8 +8,8 @@ description = """
 An utility to get directory
 """
 readme = "README.md"
-homepage = "https://github.com/alpheus-day/get_dir.rs"
-repository = "https://github.com/alpheus-day/get_dir.rs"
+homepage = "https://github.com/alpheusday/get_dir.rs"
+repository = "https://github.com/alpheusday/get_dir.rs"
 license = "MIT"
 keywords = [
     "get_dir",
