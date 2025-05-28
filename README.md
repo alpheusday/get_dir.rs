@@ -50,10 +50,10 @@ GetDir::new()
     .run_reverse();
 ```
 
-Async version also available with `async-std`/`async_std` and `tokio` features:
+Async version also available with `async_std` and `tokio` features:
 
 ```rust
-// This is a `async-std` example
+// This is a `async_std` example
 
 use get_dir::{
     GetDir,
