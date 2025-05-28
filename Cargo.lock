@@ -3,15 +3,6 @@
 version = 4
 
 [[package]]
-name = "__test__"
-version = "0.0.0"
-dependencies = [
- "async-std",
- "get_dir",
- "tokio",
-]
-
-[[package]]
 name = "addr2line"
 version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -502,6 +493,15 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "tests"
+version = "0.0.0"
+dependencies = [
+ "async-std",
+ "get_dir",
+ "tokio",
 ]
 
 [[package]]
