@@ -1,6 +1,6 @@
 //! # Get Dir
 //!
-//! An utility to get directory.
+//! A utility to get directory.
 //!
 //! This utility searches for a target directory by checking for any directories or files that match the provided input.
 //!
@@ -88,15 +88,15 @@
 //! # }
 //! ```
 
-/// Run asynchronously with `async-std`/`async_std` feature.
+/// Run asynchronously with `async_std` feature.
 ///
 /// To use it, add the following code to the `Cargo.toml` file:
 ///
 /// ```toml
 /// [dependencies]
-/// get_dir = { version = "*", features = ["async-std"] }
+/// get_dir = { version = "*", features = ["async_std"] }
 /// ```
-#[cfg(feature = "async-std")]
+#[cfg(feature = "async_std")]
 pub mod async_std;
 
 /// Run asynchronously with `tokio` feature.

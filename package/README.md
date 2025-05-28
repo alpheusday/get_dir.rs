@@ -1,6 +1,6 @@
 # Get Dir
 
-An utility to get directory.
+A utility to get directory.
 
 This utility searches for a target directory by checking for any directories or files that match the provided input.
 

@@ -1,11 +1,11 @@
 [package]
 name = "get_dir"
-version = "0.4.1"
+version = "0.4.2"
 authors = ["Alpheus Tang"]
 edition = "2024"
 rust-version = "1.85.0"
 description = """
-An utility to get directory
+A utility to get directory
 """
 readme = "README.md"
 homepage = "https://github.com/alpheusday/get_dir.rs"
@@ -30,10 +30,6 @@ include = [
 [package.metadata.docs.rs]
 features = ["all"]
 
-[lib]
-name = "get_dir"
-path = "src/lib.rs"
-
 [dependencies.async-std]
 workspace = true
 optional = true
@@ -45,7 +41,7 @@ features = ["fs", "io-util"]
 
 [features]
 default = []
-async-std = ["dep:async-std"]
-async_std = ["async-std"]
+async_std = ["dep:async-std"]
+async-std = ["async_std"]
 tokio = ["dep:tokio"]
-all = ["async-std", "tokio"]
+all = ["async_std", "tokio"]
