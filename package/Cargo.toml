@@ -1,7 +1,7 @@
 [package]
 name = "get_dir"
 version = "0.4.3"
-authors = ["Alpheus Tang"]
+authors = ["Alpheus <contact@alphe.us>"]
 edition = "2024"
 rust-version = "1.85.0"
 description = """
