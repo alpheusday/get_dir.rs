@@ -1,3 +1,9 @@
+## Next
+
+### What's New
+
+- Add support for smol with `smol` feature
+
 ## 0.4.3 (2025-05-28)
 
 ### What's Changed

@@ -4,6 +4,9 @@ edition = "2024"
 publish = false
 
 [dependencies]
-async-std = { workspace = true }
+async-std = { workspace = true, features = ["attributes"] }
 get_dir = { workspace = true }
-tokio = { version = "^1.40.0", features = ["macros", "rt"] }
+macro_rules_attribute = "~0.2.2"
+smol = { workspace = true }
+smol-macros = "~0.1.1"
+tokio = { workspace = true, features = ["macros", "rt"] }

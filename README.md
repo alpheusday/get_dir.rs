@@ -50,35 +50,18 @@ GetDir::new()
     .run_reverse();
 ```
 
-Async version also available with `async_std` and `tokio` features:
+Async version also available with `async_std`, `smol` and `tokio` features:
 
 ```rust
-// This is a `async_std` example
-
 use get_dir::{
     GetDir,
     Target,
     DirTarget,
+    // async_std
     async_std::GetDirAsyncExt,
-};
-
-GetDir::new()
-    .targets(vec![
-        Target::Dir(DirTarget {
-            name: "src",  
-        }),
-    ])
-    .run_async()
-    .await;
-```
-
-```rust
-// This is a `tokio` example
-
-use get_dir::{
-    GetDir,
-    Target,
-    DirTarget,
+    // smol
+    smol::GetDirAsyncExt,
+    // tokio
     tokio::GetDirAsyncExt,
 };
 

@@ -1,5 +1,7 @@
 pub mod async_std;
 
+pub mod smol;
+
 pub mod tokio;
 
 #[cfg(test)]

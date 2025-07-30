@@ -1,15 +1,17 @@
 #[cfg(test)]
 mod tests {
 
-    use std::env::current_dir;
+    use std::{env::current_dir, path::PathBuf};
 
-    use async_std::{fs::read_to_string, path::PathBuf};
+    use macro_rules_attribute::apply;
+    use smol::fs::read_to_string;
+    use smol_macros::test;
 
     use get_dir::{
-        DirTarget, FileTarget, GetDir, Target, async_std::GetDirAsyncExt,
+        DirTarget, FileTarget, GetDir, Target, smol::GetDirAsyncExt,
     };
 
-    #[async_std::test]
+    #[apply(test!)]
     async fn test_get_dir_by_target_dir() {
         let dir: PathBuf = GetDir::new()
             .targets(vec![Target::Dir(DirTarget { name: "src" })])
@@ -23,7 +25,7 @@ mod tests {
         assert!(content.contains("get_dir = { workspace = true }"));
     }
 
-    #[async_std::test]
+    #[apply(test!)]
     async fn test_get_dir_by_target_file() {
         let dir: PathBuf = GetDir::new()
             .targets(vec![Target::File(FileTarget { name: "Cargo.toml" })])
@@ -37,7 +39,7 @@ mod tests {
         assert!(content.contains("get_dir = { workspace = true }"));
     }
 
-    #[async_std::test]
+    #[apply(test!)]
     async fn test_get_dir_by_tarrun_reverse_dir() {
         let dir: PathBuf = GetDir::new()
             .targets(vec![Target::Dir(DirTarget { name: "target" })])
@@ -51,7 +53,7 @@ mod tests {
         assert!(content.contains("[workspace.dependencies]"));
     }
 
-    #[async_std::test]
+    #[apply(test!)]
     async fn test_get_dir_by_tarrun_reverse_file() {
         let dir: PathBuf = GetDir::new()
             .targets(vec![Target::File(FileTarget { name: "LICENSE" })])
@@ -65,7 +67,7 @@ mod tests {
         assert!(content.contains("[workspace.dependencies]"));
     }
 
-    #[async_std::test]
+    #[apply(test!)]
     async fn test_get_dir_by_target_file_in_specific_dir() {
         let dir: PathBuf = GetDir::new()
             .directory(current_dir().unwrap().join("..").join("package"))
