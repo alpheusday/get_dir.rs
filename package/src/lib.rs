@@ -44,46 +44,25 @@
 //!     
 //! Async version also available with `async_std` and `tokio` features:
 //!
-//! ```rust
-//! // This is a `async_std` example
-//!
+//! ```ignore
 //! use get_dir::{
 //!     GetDir,
 //!     Target,
 //!     FileTarget,
+//!     // async_std,
 //!     async_std::GetDirAsyncExt,
-//! };
-//!
-//! # async fn example() {
-//! GetDir::new()
-//!     .targets(vec![
-//!         Target::File(FileTarget {
-//!             name: "LICENSE",  
-//!         }),
-//!     ])
-//!     .run_reverse_async()
-//!     .await;
-//! # }
-//! ```
-//!
-//! ```rust
-//! // This is a `tokio` example
-//!
-//! use get_dir::{
-//!     GetDir,
-//!     Target,
-//!     FileTarget,
+//!     // tokio
 //!     tokio::GetDirAsyncExt,
 //! };
 //!
 //! # async fn example() {
 //! GetDir::new()
 //!     .targets(vec![
-//!         Target::File(FileTarget {
-//!             name: "LICENSE",  
+//!         Target::Dir(DirTarget {
+//!             name: "src",
 //!         }),
 //!     ])
-//!     .run_reverse_async()
+//!     .run_async()
 //!     .await;
 //! # }
 //! ```
