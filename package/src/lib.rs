@@ -199,11 +199,6 @@ impl<'a> GetDir<'a> {
         }
     }
 
-    /// Create a new GetDir instance from another GetDir instance.
-    pub fn from(get_dir: GetDir<'a>) -> Self {
-        get_dir
-    }
-
     /// Specific the directory to run the process.
     /// By default, it runs in current directory.
     pub fn directory<D: Into<PathBuf>>(
