@@ -8,6 +8,7 @@ name = "bench"
 harness = false
 
 [dependencies]
-criterion = { version = "~0.7.0", features = ["async_tokio"]}
+async-std = { workspace = true }
+criterion = { version = "~0.7.0", features = ["async_std", "async_tokio"]}
 get_dir = { workspace = true }
 tokio = { workspace = true }
