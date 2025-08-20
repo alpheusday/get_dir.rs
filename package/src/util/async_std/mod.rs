@@ -16,7 +16,7 @@ async fn is_target_exists(
     }
 }
 
-async fn search_targets(
+async fn is_targets_exist(
     dir: &Path,
     targets: &[Target],
 ) -> bool {
@@ -38,7 +38,7 @@ async fn get_dir(options: GetDir) -> io::Result<PathBuf> {
         return Err(io::Error::from(io::ErrorKind::NotFound));
     }
 
-    if search_targets(&dir, &targets).await {
+    if is_targets_exist(&dir, &targets).await {
         return Ok(dir);
     }
 
@@ -74,7 +74,7 @@ async fn get_dir_reverse(options: GetDir) -> io::Result<PathBuf> {
             break;
         }
 
-        if search_targets(ancestor, &targets).await {
+        if is_targets_exist(ancestor, &targets).await {
             return Ok(ancestor.to_path_buf());
         }
     }

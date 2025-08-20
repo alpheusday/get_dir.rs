@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use tokio::{fs, io};
 
-use crate::util::{GetDir, search_targets};
+use crate::util::{GetDir, is_targets_exist};
 
 async fn get_dir(options: GetDir) -> io::Result<PathBuf> {
     let GetDir { dir, depth, targets, .. } = options;
@@ -11,7 +11,7 @@ async fn get_dir(options: GetDir) -> io::Result<PathBuf> {
         return Err(io::Error::from(io::ErrorKind::NotFound));
     }
 
-    if search_targets(&dir, &targets) {
+    if is_targets_exist(&dir, &targets) {
         return Ok(dir);
     }
 
@@ -45,7 +45,7 @@ async fn get_dir_reverse(options: GetDir) -> io::Result<PathBuf> {
             break;
         }
 
-        if search_targets(ancestor, &targets) {
+        if is_targets_exist(ancestor, &targets) {
             return Ok(ancestor.to_path_buf());
         }
     }

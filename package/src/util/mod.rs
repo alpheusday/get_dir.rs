@@ -22,7 +22,7 @@ fn is_target_exists(
     }
 }
 
-pub(crate) fn search_targets(
+pub(crate) fn is_targets_exist(
     dir: &Path,
     targets: &[Target],
 ) -> bool {
@@ -36,7 +36,7 @@ fn get_dir(options: GetDir) -> io::Result<PathBuf> {
         return Err(io::Error::from(io::ErrorKind::NotFound));
     }
 
-    if search_targets(&dir, &targets) {
+    if is_targets_exist(&dir, &targets) {
         return Ok(dir);
     }
 
@@ -68,7 +68,7 @@ fn get_dir_reverse(options: GetDir) -> io::Result<PathBuf> {
             break;
         }
 
-        if search_targets(ancestor, &targets) {
+        if is_targets_exist(ancestor, &targets) {
             return Ok(ancestor.to_path_buf());
         }
     }
