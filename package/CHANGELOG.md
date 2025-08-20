@@ -6,6 +6,7 @@
 
 ### What's New
 
+- Add `depth` option
 - Add `dir` alias function for `directory` function
 
 ### Migrating from 0.4.X to 0.5.0

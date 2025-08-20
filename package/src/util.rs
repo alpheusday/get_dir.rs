@@ -11,74 +11,59 @@ fn is_target_exists(
     target: &Target,
 ) -> bool {
     match target {
-        | Target::Dir(tg) => {
-            let target_path: PathBuf = path.join(tg.name.clone());
-
-            if target_path.is_dir() {
-                return true;
-            }
-
-            false
-        },
-        | Target::File(tg) => {
-            let target_path: PathBuf = path.join(tg.name.clone());
-
-            if target_path.is_file() {
-                return true;
-            }
-
-            false
-        },
+        | Target::Dir(tg) => path.join(&tg.name).is_dir(),
+        | Target::File(tg) => path.join(&tg.name).is_file(),
     }
 }
 
-fn search_targets(
-    dir: &PathBuf,
-    targets: &Vec<Target>,
-) -> Option<PathBuf> {
-    for target in targets {
-        if is_target_exists(dir, target) {
-            return Some(dir.to_owned());
-        }
-    }
-
-    None
+pub(crate) fn search_targets(
+    dir: &Path,
+    targets: &[Target],
+) -> bool {
+    targets.iter().any(|t| is_target_exists(dir, t))
 }
 
-fn get_dir(
-    dir: &PathBuf,
-    targets: &Vec<Target>,
-) -> io::Result<PathBuf> {
-    if let Some(found) = search_targets(dir, targets) {
-        return Ok(found);
+fn get_dir(options: GetDir) -> io::Result<PathBuf> {
+    let GetDir { dir, depth, targets } = options;
+
+    if depth == 0 {
+        return Err(io::Error::from(io::ErrorKind::NotFound));
+    }
+
+    if search_targets(&dir, &targets) {
+        return Ok(dir);
     }
 
     for entry in fs::read_dir(dir)? {
         let current: PathBuf = entry?.path();
 
-        if current.is_dir() {
-            if let Some(found) = search_targets(&current, targets) {
-                return Ok(found);
-            }
+        if !current.is_dir() {
+            continue;
+        }
 
-            if let Ok(found) = get_dir(&current, targets) {
-                return Ok(found);
-            }
+        let opts: GetDir = GetDir::new()
+            .dir(current)
+            .depth(depth - 1)
+            .targets(targets.clone());
+
+        if let Ok(found) = get_dir(opts) {
+            return Ok(found);
         }
     }
 
     Err(io::Error::from(io::ErrorKind::NotFound))
 }
 
-fn get_dir_reverse(
-    dir: &Path,
-    targets: &Vec<Target>,
-) -> io::Result<PathBuf> {
-    for ancestor in dir.ancestors() {
-        for target in targets {
-            if is_target_exists(ancestor, target) {
-                return Ok(ancestor.to_path_buf());
-            }
+fn get_dir_reverse(options: GetDir) -> io::Result<PathBuf> {
+    let GetDir { dir, depth, targets } = options;
+
+    for (i, ancestor) in dir.ancestors().enumerate() {
+        if i >= depth {
+            break;
+        }
+
+        if search_targets(ancestor, &targets) {
+            return Ok(ancestor.to_path_buf());
         }
     }
 
@@ -88,7 +73,17 @@ fn get_dir_reverse(
 /// Utility to get directory.
 #[derive(Debug, Clone)]
 pub struct GetDir {
+    /// The directory to run the process.
+    ///
+    /// By default, it runs in current directory.
     pub dir: PathBuf,
+    /// The depth of the search.
+    ///
+    /// By default, it's [`usize::MAX`].
+    pub depth: usize,
+    /// The targets to search.
+    ///
+    /// By default, it's empty.
     pub targets: Vec<Target>,
 }
 
@@ -100,6 +95,7 @@ impl GetDir {
                 | Ok(path) => path,
                 | Err(_) => PathBuf::new(),
             },
+            depth: usize::MAX,
             targets: Vec::new(),
         }
     }
@@ -120,6 +116,15 @@ impl GetDir {
         dir: D,
     ) -> Self {
         self.dir = dir.into();
+        self
+    }
+
+    /// Set the depth of the search.
+    pub fn depth(
+        mut self,
+        depth: usize,
+    ) -> Self {
+        self.depth = depth;
         self
     }
 
@@ -146,13 +151,13 @@ impl GetDir {
     }
 
     /// Get the first directory containing any of the specified targets.
-    pub fn run(&self) -> io::Result<PathBuf> {
-        get_dir(&self.dir, &self.targets)
+    pub fn run(self) -> io::Result<PathBuf> {
+        get_dir(self)
     }
 
     /// Get the first directory containing any of the specified targets in reverse.
-    pub fn run_reverse(&self) -> io::Result<PathBuf> {
-        get_dir_reverse(&self.dir, &self.targets)
+    pub fn run_reverse(self) -> io::Result<PathBuf> {
+        get_dir_reverse(self)
     }
 }
 

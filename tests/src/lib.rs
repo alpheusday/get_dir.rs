@@ -68,4 +68,27 @@ mod tests {
 
         assert!(content.contains("# Get Dir"));
     }
+
+    #[test]
+    fn test_get_dir_with_depth_limit() {
+        match GetDir::new()
+            .dir(current_dir().unwrap().join("..").join("package"))
+            .depth(1)
+            .target(Target::File(FileTarget::new("lib.rs")))
+            .run()
+        {
+            | Ok(_) => panic!("Should fail"),
+            | Err(_) => (),
+        }
+
+        match GetDir::new()
+            .dir(current_dir().unwrap().join("..").join("package"))
+            .depth(2)
+            .target(Target::File(FileTarget::new("lib.rs")))
+            .run()
+        {
+            | Ok(_) => (),
+            | Err(_) => panic!("Should succeed"),
+        }
+    }
 }

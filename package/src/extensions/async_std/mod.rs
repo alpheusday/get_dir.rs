@@ -6,51 +6,40 @@ use async_std::{
 
 use crate::{structs::target::Target, util::GetDir};
 
-async fn is_target_exists<'a>(
-    path: &'a Path,
-    target: &'a Target,
+async fn is_target_exists(
+    path: &Path,
+    target: &Target,
 ) -> bool {
     match target {
-        | Target::Dir(tg) => {
-            let target_path: PathBuf = path.join(tg.name.clone());
-
-            if target_path.is_dir().await {
-                return true;
-            }
-
-            false
-        },
-        | Target::File(tg) => {
-            let target_path: PathBuf = path.join(tg.name.clone());
-
-            if target_path.is_file().await {
-                return true;
-            }
-
-            false
-        },
+        | Target::Dir(tg) => path.join(&tg.name).is_dir().await,
+        | Target::File(tg) => path.join(&tg.name).is_file().await,
     }
 }
 
-async fn search_targets<'a>(
-    dir: &'a PathBuf,
-    targets: &'a Vec<Target>,
-) -> Option<PathBuf> {
+async fn search_targets(
+    dir: &Path,
+    targets: &[Target],
+) -> bool {
     for target in targets {
         if is_target_exists(dir, target).await {
-            return Some(dir.to_owned());
+            return true;
         }
     }
 
-    None
+    false
 }
 
-async fn get_dir<'a>(
-    dir: &'a PathBuf,
-    targets: &'a Vec<Target>,
-) -> io::Result<PathBuf> {
-    if let Some(found) = search_targets(dir, targets).await {
-        return Ok(found);
+async fn get_dir(options: GetDir) -> io::Result<PathBuf> {
+    let GetDir { dir, depth, targets, .. } = options;
+
+    let dir: PathBuf = dir.into();
+
+    if depth == 0 {
+        return Err(io::Error::from(io::ErrorKind::NotFound));
+    }
+
+    if search_targets(&dir, &targets).await {
+        return Ok(dir);
     }
 
     let mut entries: fs::ReadDir = fs::read_dir(dir).await?;
@@ -58,31 +47,35 @@ async fn get_dir<'a>(
     while let Some(entry) = entries.next().await {
         let current: PathBuf = entry?.path();
 
-        if current.is_dir().await {
-            if let Some(found) = search_targets(&current, targets).await {
-                return Ok(found);
-            }
+        if !current.is_dir().await {
+            continue;
+        }
 
-            if let Ok(found) = Box::pin(get_dir(&current, targets)).await {
-                return Ok(found);
-            }
+        let opts: GetDir = GetDir::new()
+            .dir(current)
+            .depth(depth - 1)
+            .targets(targets.clone());
+
+        if let Ok(found) = Box::pin(get_dir(opts)).await {
+            return Ok(found);
         }
     }
 
     Err(io::Error::from(io::ErrorKind::NotFound))
 }
 
-async fn get_dir_reverse(
-    dir: &PathBuf,
-    targets: &Vec<Target>,
-) -> io::Result<PathBuf> {
+async fn get_dir_reverse(options: GetDir) -> io::Result<PathBuf> {
+    let GetDir { dir, depth, targets, .. } = options;
+
     let current: PathBuf = dir.into();
 
-    for ancestor in current.ancestors() {
-        for target in targets {
-            if is_target_exists(ancestor, target).await {
-                return Ok(ancestor.to_path_buf());
-            }
+    for (i, ancestor) in current.ancestors().enumerate() {
+        if i >= depth {
+            break;
+        }
+
+        if search_targets(ancestor, &targets).await {
+            return Ok(ancestor.to_path_buf());
         }
     }
 
@@ -93,21 +86,21 @@ async fn get_dir_reverse(
 pub trait GetDirAsyncExt {
     /// Get directory asynchronously.
     fn run_async(
-        &self
+        self
     ) -> impl std::future::Future<Output = io::Result<PathBuf>> + Send;
 
     /// Get directory in reverse asynchronously.
     fn run_reverse_async(
-        &self
+        self
     ) -> impl std::future::Future<Output = io::Result<PathBuf>> + Send;
 }
 
 impl GetDirAsyncExt for GetDir {
-    async fn run_async(&self) -> io::Result<PathBuf> {
-        get_dir(&self.dir.clone().into(), &self.targets).await
+    async fn run_async(self) -> io::Result<PathBuf> {
+        get_dir(self).await
     }
 
-    async fn run_reverse_async(&self) -> io::Result<PathBuf> {
-        get_dir_reverse(&self.dir.clone().into(), &self.targets).await
+    async fn run_reverse_async(self) -> io::Result<PathBuf> {
+        get_dir_reverse(self).await
     }
 }
