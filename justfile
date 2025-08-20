@@ -27,6 +27,10 @@ fmt:
 test:
     cargo test -p tests -- --nocapture
 
+# Run benchmark
+bench:
+    cargo bench -p bench
+
 # Clean up
 clean:
     cargo clean

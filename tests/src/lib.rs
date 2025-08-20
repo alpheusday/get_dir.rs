@@ -11,7 +11,7 @@ mod tests {
     #[test]
     fn test_get_dir_by_target_dir() {
         let dir: PathBuf = GetDir::new()
-            .targets(vec![Target::Dir(DirTarget { name: "src" })])
+            .target(Target::Dir(DirTarget::new("src")))
             .run()
             .unwrap();
 
@@ -23,7 +23,7 @@ mod tests {
     #[test]
     fn test_get_dir_by_target_file() {
         let dir: PathBuf = GetDir::new()
-            .targets(vec![Target::File(FileTarget { name: "Cargo.toml" })])
+            .target(Target::File(FileTarget::new("Cargo.toml")))
             .run()
             .unwrap();
 
@@ -35,7 +35,7 @@ mod tests {
     #[test]
     fn test_get_dir_by_target_reverse_dir() {
         let dir: PathBuf = GetDir::new()
-            .targets(vec![Target::Dir(DirTarget { name: "target" })])
+            .target(Target::Dir(DirTarget::new("target")))
             .run_reverse()
             .unwrap();
 
@@ -47,7 +47,7 @@ mod tests {
     #[test]
     fn test_get_dir_by_target_reverse_file() {
         let dir: PathBuf = GetDir::new()
-            .targets(vec![Target::File(FileTarget { name: "LICENSE" })])
+            .target(Target::File(FileTarget::new("LICENSE")))
             .run_reverse()
             .unwrap();
 
@@ -60,7 +60,7 @@ mod tests {
     fn test_get_dir_by_target_file_in_specific_dir() {
         let dir: PathBuf = GetDir::new()
             .directory(current_dir().unwrap().join("..").join("package"))
-            .targets(vec![Target::File(FileTarget { name: "lib.rs" })])
+            .target(Target::File(FileTarget::new("lib.rs")))
             .run()
             .unwrap();
 

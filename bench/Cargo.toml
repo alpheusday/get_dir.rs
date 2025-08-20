@@ -1,0 +1,13 @@
+[package]
+name = "bench"
+edition = "2024"
+publish = false
+
+[[bench]]
+name = "bench"
+harness = false
+
+[dependencies]
+criterion = { version = "~0.7.0", features = ["async_tokio"]}
+get_dir = { workspace = true }
+tokio = { workspace = true }

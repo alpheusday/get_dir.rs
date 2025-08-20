@@ -1,3 +1,21 @@
+## 0.5.0
+
+### Breaking Changes
+
+- Changes in `DirTarget` and `FileTarget`
+
+### Migrating from 0.4.X to 0.5.0
+
+```diff
+use get_dir::{DirTarget, FileTarget};
+
+- DirTarget { name: "src" };
+- FileTarget { name: "LICENSE" };
+
++ DirTarget::new("src");
++ FileTarget::new("LICENSE");
+```
+
 ## 0.4.3 (2025-05-28)
 
 ### What's Changed

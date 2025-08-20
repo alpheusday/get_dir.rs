@@ -16,11 +16,9 @@ use get_dir::{
 };
 
 GetDir::new()
-    .targets(vec![
-        Target::Dir(DirTarget {
-            name: "src",  
-        }),
-    ])
+    .target(
+        Target::Dir(DirTarget::new("src")),
+    )
     .run();
 ```
 
@@ -34,11 +32,9 @@ use get_dir::{
 };
 
 GetDir::new()
-    .targets(vec![
-        Target::File(FileTarget {
-            name: "LICENSE",  
-        }),
-    ])
+    .target(
+        Target::File(FileTarget::new("LICENSE")),
+    )
     .run_reverse();
 ```
 
@@ -56,11 +52,9 @@ use get_dir::{
 };
 
 GetDir::new()
-    .targets(vec![
-        Target::Dir(DirTarget {
-            name: "src",
-        }),
-    ])
+    .target(
+        Target::Dir(DirTarget::new("src")),
+    )
     .run_async()
     .await;
 ```
