@@ -114,6 +114,15 @@ impl GetDir {
         self
     }
 
+    /// Alias for [`GetDir::directory`] function.
+    pub fn dir<D: Into<PathBuf>>(
+        mut self,
+        dir: D,
+    ) -> Self {
+        self.dir = dir.into();
+        self
+    }
+
     /// Add targets to the GetDir instance.
     pub fn targets<TS, T>(
         mut self,

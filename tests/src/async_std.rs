@@ -68,7 +68,7 @@ mod tests {
     #[async_std::test]
     async fn test_get_dir_by_target_file_in_specific_dir() {
         let dir: PathBuf = GetDir::new()
-            .directory(current_dir().unwrap().join("..").join("package"))
+            .dir(current_dir().unwrap().join("..").join("package"))
             .target(Target::File(FileTarget::new("lib.rs")))
             .run_async()
             .await

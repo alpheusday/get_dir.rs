@@ -16,7 +16,7 @@ fn bench_get_dir(c: &mut Criterion) {
     group.bench_function("Sync", |b| {
         b.iter(|| {
             let result: PathBuf = GetDir::new()
-                .directory(&root)
+                .dir(&root)
                 .target(Target::File(FileTarget::new("bench.rs")))
                 .run()
                 .unwrap();
@@ -33,7 +33,7 @@ fn bench_get_dir(c: &mut Criterion) {
 
         b.to_async(runtime).iter(async || {
             let result: PathBuf = GetDir::new()
-                .directory(&root)
+                .dir(&root)
                 .target(Target::File(FileTarget::new("bench.rs")))
                 .run_async()
                 .await
@@ -58,7 +58,7 @@ fn bench_get_dir_reverse(c: &mut Criterion) {
     group.bench_function("Sync", |b| {
         b.iter(|| {
             let result: PathBuf = GetDir::new()
-                .directory(&root)
+                .dir(&root)
                 .target(Target::File(FileTarget::new("Cargo.lock")))
                 .run_reverse()
                 .unwrap();
@@ -75,7 +75,7 @@ fn bench_get_dir_reverse(c: &mut Criterion) {
 
         b.to_async(runtime).iter(async || {
             let result: PathBuf = GetDir::new()
-                .directory(&root)
+                .dir(&root)
                 .target(Target::File(FileTarget::new("Cargo.lock")))
                 .run_reverse_async()
                 .await
