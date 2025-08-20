@@ -65,8 +65,6 @@ pub(crate) mod structs;
 
 pub(crate) mod util;
 
-pub(crate) mod extensions;
-
 pub use crate::structs::target::dir::DirTarget;
 
 pub use crate::structs::target::file::FileTarget;
@@ -85,7 +83,7 @@ pub use crate::util::GetDir;
 /// ```
 #[cfg(feature = "async_std")]
 pub mod async_std {
-    pub use crate::extensions::async_std::GetDirAsyncExt;
+    pub use crate::util::async_std::GetDirAsyncExt;
 }
 
 /// Run asynchronously with `tokio` feature.
@@ -98,5 +96,5 @@ pub mod async_std {
 /// ```
 #[cfg(feature = "tokio")]
 pub mod tokio {
-    pub use crate::extensions::tokio::GetDirAsyncExt;
+    pub use crate::util::tokio::GetDirAsyncExt;
 }
