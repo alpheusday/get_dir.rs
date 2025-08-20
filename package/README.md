@@ -38,7 +38,7 @@ GetDir::new()
     .run_reverse();
 ```
 
-Async version also available with `async_std` and `tokio` features:
+Async version also available with `async_std`, `smol`, and `tokio` features:
 
 ```rust
 use get_dir::{
@@ -47,6 +47,8 @@ use get_dir::{
     DirTarget,
     // async_std
     async_std::GetDirAsyncExt,
+    // smol
+    smol::GetDirAsyncExt,
     // tokio
     tokio::GetDirAsyncExt,
 };

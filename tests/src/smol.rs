@@ -1,83 +1,94 @@
-pub mod async_std;
-
-pub mod smol;
-
-pub mod tokio;
-
 #[cfg(test)]
 mod tests {
-    use std::{env::current_dir, fs::read_to_string, path::PathBuf};
 
-    use get_dir::{DirTarget, FileTarget, GetDir, Target};
+    use std::{env::current_dir, path::PathBuf};
 
-    #[test]
-    fn test_get_dir_by_target_dir() {
+    use macro_rules_attribute::apply;
+    use smol::fs::read_to_string;
+    use smol_macros::test;
+
+    use get_dir::{
+        DirTarget, FileTarget, GetDir, Target, smol::GetDirAsyncExt,
+    };
+
+    #[apply(test)]
+    async fn test_get_dir_by_target_dir() {
         let dir: PathBuf = GetDir::new()
             .target(Target::Dir(DirTarget::new("src")))
-            .run()
+            .run_async()
+            .await
             .unwrap();
 
-        let content: String = read_to_string(dir.join("Cargo.toml")).unwrap();
+        let content: String =
+            read_to_string(dir.join("Cargo.toml")).await.unwrap();
 
         assert!(content.contains("get_dir = { workspace = true }"));
     }
 
-    #[test]
-    fn test_get_dir_by_target_file() {
+    #[apply(test)]
+    async fn test_get_dir_by_target_file() {
         let dir: PathBuf = GetDir::new()
             .target(Target::File(FileTarget::new("Cargo.toml")))
-            .run()
+            .run_async()
+            .await
             .unwrap();
 
-        let content: String = read_to_string(dir.join("Cargo.toml")).unwrap();
+        let content: String =
+            read_to_string(dir.join("Cargo.toml")).await.unwrap();
 
         assert!(content.contains("get_dir = { workspace = true }"));
     }
 
-    #[test]
-    fn test_get_dir_by_target_reverse_dir() {
+    #[apply(test)]
+    async fn test_get_dir_by_tarrun_reverse_dir() {
         let dir: PathBuf = GetDir::new()
             .target(Target::Dir(DirTarget::new("target")))
-            .run_reverse()
+            .run_reverse_async()
+            .await
             .unwrap();
 
-        let content: String = read_to_string(dir.join("Cargo.toml")).unwrap();
+        let content: String =
+            read_to_string(dir.join("Cargo.toml")).await.unwrap();
 
         assert!(content.contains("[workspace.dependencies]"));
     }
 
-    #[test]
-    fn test_get_dir_by_target_reverse_file() {
+    #[apply(test)]
+    async fn test_get_dir_by_tarrun_reverse_file() {
         let dir: PathBuf = GetDir::new()
             .target(Target::File(FileTarget::new("LICENSE")))
-            .run_reverse()
+            .run_reverse_async()
+            .await
             .unwrap();
 
-        let content: String = read_to_string(dir.join("Cargo.toml")).unwrap();
+        let content: String =
+            read_to_string(dir.join("Cargo.toml")).await.unwrap();
 
         assert!(content.contains("[workspace.dependencies]"));
     }
 
-    #[test]
-    fn test_get_dir_by_target_file_in_specific_dir() {
+    #[apply(test)]
+    async fn test_get_dir_by_target_file_in_specific_dir() {
         let dir: PathBuf = GetDir::new()
             .dir(current_dir().unwrap().join("..").join("package"))
             .target(Target::File(FileTarget::new("lib.rs")))
-            .run()
+            .run_async()
+            .await
             .unwrap();
 
-        let content: String = read_to_string(dir.join("lib.rs")).unwrap();
+        let content: String = read_to_string(dir.join("lib.rs")).await.unwrap();
 
         assert!(content.contains("# Get Dir"));
     }
 
-    #[test]
-    fn test_get_dir_with_depth_limit() {
+    #[apply(test)]
+    async fn test_get_dir_with_depth_limit() {
         match GetDir::new()
             .dir(current_dir().unwrap().join("..").join("package"))
             .depth(1)
             .target(Target::File(FileTarget::new("lib.rs")))
-            .run()
+            .run_async()
+            .await
         {
             | Ok(_) => panic!("Should fail"),
             | Err(_) => (),
@@ -87,7 +98,8 @@ mod tests {
             .dir(current_dir().unwrap().join("..").join("package"))
             .depth(2)
             .target(Target::File(FileTarget::new("lib.rs")))
-            .run()
+            .run_async()
+            .await
         {
             | Ok(_) => (),
             | Err(_) => panic!("Should succeed"),

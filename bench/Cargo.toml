@@ -9,6 +9,6 @@ harness = false
 
 [dependencies]
 async-std = { workspace = true }
-criterion = { version = "~0.7.0", features = ["async_std", "async_tokio"]}
+criterion = { workspace = true, features = ["async_std", "async_smol", "async_tokio"]}
 get_dir = { workspace = true }
 tokio = { workspace = true }

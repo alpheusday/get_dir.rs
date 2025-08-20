@@ -2,8 +2,10 @@ use std::{hint::black_box, path::PathBuf};
 
 use async_std::path::PathBuf as AsyncPathBuf;
 use criterion::{
-    BenchmarkGroup, Criterion, async_executor::AsyncStdExecutor,
-    criterion_group, criterion_main, measurement::WallTime,
+    BenchmarkGroup, Criterion,
+    async_executor::{AsyncStdExecutor, SmolExecutor},
+    criterion_group, criterion_main,
+    measurement::WallTime,
 };
 use get_dir::{FileTarget, GetDir, Target};
 use tokio::runtime::Runtime;
@@ -34,6 +36,21 @@ fn bench_get_dir(c: &mut Criterion) {
 
         b.to_async(AsyncStdExecutor).iter(async || {
             let result: AsyncPathBuf = GetDir::new()
+                .dir(&root)
+                .target(Target::File(FileTarget::new("bench.rs")))
+                .run_async()
+                .await
+                .unwrap();
+
+            black_box(result);
+        });
+    });
+
+    group.bench_function("smol", |b| {
+        use get_dir::smol::GetDirAsyncExt as _;
+
+        b.to_async(SmolExecutor).iter(async || {
+            let result: PathBuf = GetDir::new()
                 .dir(&root)
                 .target(Target::File(FileTarget::new("bench.rs")))
                 .run_async()
@@ -94,6 +111,21 @@ fn bench_get_dir_reverse(c: &mut Criterion) {
 
         b.to_async(AsyncStdExecutor).iter(async || {
             let result: AsyncPathBuf = GetDir::new()
+                .dir(&root)
+                .target(Target::File(FileTarget::new("Cargo.lock")))
+                .run_reverse_async()
+                .await
+                .unwrap();
+
+            black_box(result);
+        });
+    });
+
+    group.bench_function("smol", |b| {
+        use get_dir::smol::GetDirAsyncExt as _;
+
+        b.to_async(SmolExecutor).iter(async || {
+            let result: PathBuf = GetDir::new()
                 .dir(&root)
                 .target(Target::File(FileTarget::new("Cargo.lock")))
                 .run_reverse_async()

@@ -38,7 +38,7 @@
 //!     .run_reverse();
 //! ```
 //!     
-//! Async version also available with `async_std` and `tokio` features:
+//! Async version also available with `async_std`, `smol` and `tokio` features:
 //!
 //! ```ignore
 //! use get_dir::{
@@ -47,6 +47,8 @@
 //!     DirTarget,
 //!     // async_std,
 //!     async_std::GetDirAsyncExt,
+//!     // smol
+//!     smol::GetDirAsyncExt,
 //!     // tokio
 //!     tokio::GetDirAsyncExt,
 //! };
@@ -84,6 +86,19 @@ pub use crate::util::GetDir;
 #[cfg(feature = "async_std")]
 pub mod async_std {
     pub use crate::util::async_std::GetDirAsyncExt;
+}
+
+/// Run asynchronously with `smol` feature.
+///
+/// To use it, add the following code to the `Cargo.toml` file:
+///
+/// ```toml
+/// [dependencies]
+/// get_dir = { version = "*", features = ["smol"] }
+/// ```
+#[cfg(feature = "smol")]
+pub mod smol {
+    pub use crate::util::smol::GetDirAsyncExt;
 }
 
 /// Run asynchronously with `tokio` feature.

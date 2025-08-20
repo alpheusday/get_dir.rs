@@ -6,4 +6,7 @@ publish = false
 [dependencies]
 async-std = { workspace = true, features = ["attributes"] }
 get_dir = { workspace = true }
+macro_rules_attribute = { workspace = true }
+smol = { workspace = true }
+smol-macros = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt"] }

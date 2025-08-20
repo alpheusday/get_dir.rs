@@ -6,6 +6,7 @@
 
 ### What's New
 
+- Add support for `smol` (require `smol` feature)
 - Add `depth` option
 - Add `dir` alias function for `directory` function
 
