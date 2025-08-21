@@ -9,38 +9,46 @@
 //! Get directory by target with the following code:
 //!
 //! ```rust
+//! use std::path::PathBuf;
+//!
 //! use get_dir::{
 //!     GetDir,
 //!     Target,
 //!     DirTarget,
 //! };
 //!
-//! GetDir::new()
+//! let path: PathBuf = GetDir::new()
 //!     .target(
 //!         Target::Dir(DirTarget::new("src")),
 //!     )
-//!     .run();
+//!     .run()
+//!     .unwrap();
 //! ```
 //!
 //! Or get directory by target in reverse with the following code:
 //!
 //! ```rust
+//! use std::path::PathBuf;
+//!
 //! use get_dir::{
 //!     GetDir,
 //!     Target,
 //!     FileTarget,
 //! };
 //!
-//! GetDir::new()
+//! let path: PathBuf = GetDir::new()
 //!     .target(
 //!         Target::File(FileTarget::new("LICENSE")),
 //!     )
-//!     .run_reverse();
+//!     .run_reverse()
+//!     .unwrap();
 //! ```
 //!     
 //! Async version also available with `async_std`, `smol` and `tokio` features:
 //!
 //! ```ignore
+//! use std::path::PathBuf;
+//!
 //! use get_dir::{
 //!     GetDir,
 //!     Target,
@@ -54,12 +62,13 @@
 //! };
 //!
 //! # async fn example() {
-//! GetDir::new()
+//! let path: PathBuf = GetDir::new()
 //!     .target(
 //!         Target::Dir(DirTarget::new("src")),
 //!     )
 //!     .run_async()
-//!     .await;
+//!     .await
+//!     .unwrap();
 //! # }
 //! ```
 
