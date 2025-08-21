@@ -172,7 +172,7 @@ impl GetDir {
 
     /// Set the depth of the search.
     ///
-    /// By default, it's [`usize::MAX`].
+    /// By default, it is [`usize::MAX`].
     ///
     /// ## Example
     ///
@@ -194,7 +194,7 @@ impl GetDir {
         self
     }
 
-    /// Add targets to the GetDir instance.
+    /// Add targets to the search.
     ///
     /// ## Example
     ///
@@ -228,7 +228,7 @@ impl GetDir {
         self
     }
 
-    /// Add a target to the GetDir instance.
+    /// Add a target to the search.
     ///
     /// ## Example
     ///
