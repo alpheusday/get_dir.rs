@@ -6,7 +6,7 @@ This utility searches for a target directory by checking for any directories or 
 
 ## Installation
 
-To install this package, run the following command:
+Install this package as a dependency in the project:
 
 ```bash
 cargo add get_dir
@@ -68,6 +68,10 @@ GetDir::new()
     .run_async()
     .await;
 ```
+
+## See also
+
+For resolving the root of a workspace, consider using the [`workspace_root`](https://github.com/alpheusday/workspace_root.rs) library.
 
 ## License
 

@@ -61,6 +61,10 @@ GetDir::new()
     .await;
 ```
 
+## See also
+
+For resolving the root of a workspace, consider using the [`workspace_root`](https://github.com/alpheusday/workspace_root.rs) library.
+
 ## License
 
 This project is licensed under the terms of the MIT license.
