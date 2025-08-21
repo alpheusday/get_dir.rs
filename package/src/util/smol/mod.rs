@@ -56,11 +56,47 @@ async fn get_dir_reverse(options: GetDir) -> io::Result<PathBuf> {
 /// Trait for getting directory with smol.
 pub trait GetDirAsyncExt {
     /// Get directory asynchronously.
+    ///
+    /// ## Example
+    ///
+    /// ```no_run
+    /// use std::path::PathBuf;
+    ///
+    /// use get_dir::{
+    ///     GetDir,
+    ///     smol::GetDirAsyncExt,
+    /// };
+    ///
+    /// # async fn example() {
+    /// let path: PathBuf = GetDir::new()
+    ///     .run_async()
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
     fn run_async(
         self
     ) -> impl std::future::Future<Output = io::Result<PathBuf>> + Send;
 
     /// Get directory in reverse asynchronously.
+    ///
+    /// ## Example
+    ///
+    /// ```no_run
+    /// use std::path::PathBuf;
+    ///
+    /// use get_dir::{
+    ///     GetDir,
+    ///     smol::GetDirAsyncExt,
+    /// };
+    ///
+    /// # async fn example() {
+    /// let path: PathBuf = GetDir::new()
+    ///     .run_reverse_async()
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
     fn run_reverse_async(
         self
     ) -> impl std::future::Future<Output = io::Result<PathBuf>> + Send;

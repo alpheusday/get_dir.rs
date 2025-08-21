@@ -80,24 +80,49 @@ fn get_dir_reverse(options: GetDir) -> io::Result<PathBuf> {
 }
 
 /// Utility to get directory.
+///
+/// ## Example
+///
+/// ```no_run
+/// use std::path::PathBuf;
+///
+/// use get_dir::{
+///     GetDir,
+///     Target,
+///     DirTarget,
+/// };
+///
+/// let path: PathBuf = GetDir::new()
+///     .target(
+///         Target::Dir(DirTarget::new("src")),
+///     )
+///     .run()
+///     .unwrap();
+/// ```
 #[derive(Debug, Clone)]
 pub struct GetDir {
     /// The directory to run the process.
-    ///
-    /// By default, it runs in current directory.
     pub dir: PathBuf,
     /// The depth of the search.
-    ///
-    /// By default, it's [`usize::MAX`].
     pub depth: usize,
     /// The targets to search.
-    ///
-    /// By default, it's empty.
     pub targets: Vec<Target>,
 }
 
 impl GetDir {
     /// Create a new GetDir instance.
+    ///
+    /// ## Example
+    ///
+    /// ```no_run
+    /// use std::path::PathBuf;
+    ///
+    /// use get_dir::GetDir;
+    ///
+    /// let path: PathBuf = GetDir::new()
+    ///     .run()
+    ///     .unwrap();
+    /// ```
     pub fn new() -> Self {
         GetDir {
             dir: match current_dir() {
@@ -110,7 +135,24 @@ impl GetDir {
     }
 
     /// Specific the directory to run the process.
+    ///
     /// By default, it runs in current directory.
+    ///
+    /// ## Example
+    ///
+    /// ```no_run
+    /// use std::path::{
+    ///     Path,
+    ///     PathBuf,
+    /// };
+    ///
+    /// use get_dir::GetDir;
+    ///
+    /// let path: PathBuf = GetDir::new()
+    ///     .directory(Path::new(".").join("src"))
+    ///     .run()
+    ///     .unwrap();
+    /// ```
     pub fn directory<D: Into<PathBuf>>(
         mut self,
         dir: D,
@@ -129,6 +171,21 @@ impl GetDir {
     }
 
     /// Set the depth of the search.
+    ///
+    /// By default, it's [`usize::MAX`].
+    ///
+    /// ## Example
+    ///
+    /// ```no_run
+    /// use std::path::PathBuf;
+    ///
+    /// use get_dir::GetDir;
+    ///
+    /// let path: PathBuf = GetDir::new()
+    ///     .depth(2)
+    ///     .run()
+    ///     .unwrap();
+    /// ```
     pub fn depth(
         mut self,
         depth: usize,
@@ -138,6 +195,27 @@ impl GetDir {
     }
 
     /// Add targets to the GetDir instance.
+    ///
+    /// ## Example
+    ///
+    /// ```no_run
+    /// use std::path::PathBuf;
+    ///
+    /// use get_dir::{
+    ///     GetDir,
+    ///     Target,
+    ///     DirTarget,
+    ///     FileTarget,
+    /// };
+    ///
+    /// let path: PathBuf = GetDir::new()
+    ///     .targets([
+    ///         Target::Dir(DirTarget::new("src")),
+    ///         Target::File(FileTarget::new("Cargo.toml")),
+    ///     ])
+    ///     .run()
+    ///     .unwrap();
+    /// ```
     pub fn targets<TS, T>(
         mut self,
         targets: TS,
@@ -151,6 +229,23 @@ impl GetDir {
     }
 
     /// Add a target to the GetDir instance.
+    ///
+    /// ## Example
+    ///
+    /// ```no_run
+    /// use std::path::PathBuf;
+    ///
+    /// use get_dir::{
+    ///     GetDir,
+    ///     Target,
+    ///     DirTarget,
+    /// };
+    ///
+    /// let path: PathBuf = GetDir::new()
+    ///     .target(Target::Dir(DirTarget::new("src")))
+    ///     .run()
+    ///     .unwrap();
+    /// ```
     pub fn target(
         mut self,
         target: Target,
@@ -160,11 +255,35 @@ impl GetDir {
     }
 
     /// Get the first directory containing any of the specified targets.
+    ///
+    /// ## Example
+    ///
+    /// ```no_run
+    /// use std::path::PathBuf;
+    ///
+    /// use get_dir::GetDir;
+    ///
+    /// let path: PathBuf = GetDir::new()
+    ///     .run()
+    ///     .unwrap();
+    /// ```
     pub fn run(self) -> io::Result<PathBuf> {
         get_dir(self)
     }
 
     /// Get the first directory containing any of the specified targets in reverse.
+    ///
+    /// ## Example
+    ///
+    /// ```no_run
+    /// use std::path::PathBuf;
+    ///
+    /// use get_dir::GetDir;
+    ///
+    /// let path: PathBuf = GetDir::new()
+    ///     .run_reverse()
+    ///     .unwrap();
+    /// ```
     pub fn run_reverse(self) -> io::Result<PathBuf> {
         get_dir_reverse(self)
     }
