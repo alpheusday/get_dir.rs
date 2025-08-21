@@ -5,7 +5,7 @@ use tokio::{fs, io};
 use crate::util::{GetDir, is_targets_exist};
 
 async fn get_dir(options: GetDir) -> io::Result<PathBuf> {
-    let GetDir { dir, depth, targets, .. } = options;
+    let GetDir { dir, depth, targets } = options;
 
     if depth == 0 {
         return Err(io::Error::from(io::ErrorKind::NotFound));
@@ -38,7 +38,7 @@ async fn get_dir(options: GetDir) -> io::Result<PathBuf> {
 }
 
 async fn get_dir_reverse(options: GetDir) -> io::Result<PathBuf> {
-    let GetDir { dir, depth, targets, .. } = options;
+    let GetDir { dir, depth, targets } = options;
 
     for (i, ancestor) in dir.ancestors().enumerate() {
         if i >= depth {

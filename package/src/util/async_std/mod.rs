@@ -30,7 +30,7 @@ async fn is_targets_exist(
 }
 
 async fn get_dir(options: GetDir) -> io::Result<PathBuf> {
-    let GetDir { dir, depth, targets, .. } = options;
+    let GetDir { dir, depth, targets } = options;
 
     let dir: PathBuf = dir.into();
 
@@ -65,7 +65,7 @@ async fn get_dir(options: GetDir) -> io::Result<PathBuf> {
 }
 
 async fn get_dir_reverse(options: GetDir) -> io::Result<PathBuf> {
-    let GetDir { dir, depth, targets, .. } = options;
+    let GetDir { dir, depth, targets } = options;
 
     let current: PathBuf = dir.into();
 
