@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 use async_std::{
     fs, io,
     path::{Path, PathBuf},
@@ -38,26 +40,30 @@ async fn get_dir(options: GetDir) -> io::Result<PathBuf> {
         return Err(io::Error::from(io::ErrorKind::NotFound));
     }
 
-    if is_targets_exist(&dir, &targets).await {
-        return Ok(dir);
-    }
+    let mut queue: VecDeque<(PathBuf, usize)> = VecDeque::new();
 
-    let mut entries: fs::ReadDir = fs::read_dir(dir).await?;
+    queue.push_back((dir, depth));
 
-    while let Some(entry) = entries.next().await {
-        let current: PathBuf = entry?.path();
+    while let Some((current_dir, remaining_depth)) = queue.pop_front() {
+        if is_targets_exist(&current_dir, &targets).await {
+            return Ok(current_dir);
+        }
 
-        if !current.is_dir().await {
+        if remaining_depth <= 1 {
             continue;
         }
 
-        let opts: GetDir = GetDir::new()
-            .dir(current)
-            .depth(depth - 1)
-            .targets(targets.clone());
+        let mut entries: fs::ReadDir = match fs::read_dir(&current_dir).await {
+            | Ok(e) => e,
+            | Err(_) => continue,
+        };
 
-        if let Ok(found) = Box::pin(get_dir(opts)).await {
-            return Ok(found);
+        while let Some(Ok(entry)) = entries.next().await {
+            let path: PathBuf = entry.path();
+
+            if path.is_dir().await {
+                queue.push_back((path, remaining_depth - 1));
+            }
         }
     }
 

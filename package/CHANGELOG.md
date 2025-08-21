@@ -10,6 +10,10 @@
 - Add `depth` option
 - Add `dir` alias function for `directory` function
 
+### What's Changed
+
+- Speed optimization
+
 ### Migrating from 0.4.X to 0.5.0
 
 ```diff

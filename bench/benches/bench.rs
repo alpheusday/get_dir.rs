@@ -10,20 +10,14 @@ use criterion::{
 use get_dir::{FileTarget, GetDir, Target};
 use tokio::runtime::Runtime;
 
-// root -> root/bench/benches/bench.rs
+// root/bench -> root/bench/assets/z/z2/target.txt
 fn bench_get_dir(c: &mut Criterion) {
     let mut group: BenchmarkGroup<'_, WallTime> = c.benchmark_group("get_dir");
-
-    let root: PathBuf = GetDir::new()
-        .target(Target::File(FileTarget::new("Cargo.lock")))
-        .run_reverse()
-        .unwrap();
 
     group.bench_function("sync", |b| {
         b.iter(|| {
             let result: PathBuf = GetDir::new()
-                .dir(&root)
-                .target(Target::File(FileTarget::new("bench.rs")))
+                .target(Target::File(FileTarget::new("target.txt")))
                 .run()
                 .unwrap();
 
@@ -36,8 +30,7 @@ fn bench_get_dir(c: &mut Criterion) {
 
         b.to_async(AsyncStdExecutor).iter(async || {
             let result: AsyncPathBuf = GetDir::new()
-                .dir(&root)
-                .target(Target::File(FileTarget::new("bench.rs")))
+                .target(Target::File(FileTarget::new("target.txt")))
                 .run_async()
                 .await
                 .unwrap();
@@ -51,8 +44,7 @@ fn bench_get_dir(c: &mut Criterion) {
 
         b.to_async(SmolExecutor).iter(async || {
             let result: PathBuf = GetDir::new()
-                .dir(&root)
-                .target(Target::File(FileTarget::new("bench.rs")))
+                .target(Target::File(FileTarget::new("target.txt")))
                 .run_async()
                 .await
                 .unwrap();
@@ -71,8 +63,7 @@ fn bench_get_dir(c: &mut Criterion) {
 
         b.to_async(runtime).iter(async || {
             let result: PathBuf = GetDir::new()
-                .dir(&root)
-                .target(Target::File(FileTarget::new("bench.rs")))
+                .target(Target::File(FileTarget::new("target.txt")))
                 .run_async()
                 .await
                 .unwrap();
@@ -84,13 +75,13 @@ fn bench_get_dir(c: &mut Criterion) {
     group.finish();
 }
 
-// root/bench/benches/bench.rs -> root
+// root/bench/assets/z/z2/target.txt -> root
 fn bench_get_dir_reverse(c: &mut Criterion) {
     let mut group: BenchmarkGroup<'_, WallTime> =
         c.benchmark_group("get_dir_reverse");
 
     let root: PathBuf = GetDir::new()
-        .target(Target::File(FileTarget::new("bench.rs")))
+        .target(Target::File(FileTarget::new("target.txt")))
         .run()
         .unwrap();
 

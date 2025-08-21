@@ -8,6 +8,7 @@ pub mod smol;
 pub mod tokio;
 
 use std::{
+    collections::VecDeque,
     env::current_dir,
     fs, io,
     path::{Path, PathBuf},
@@ -39,24 +40,30 @@ fn get_dir(options: GetDir) -> io::Result<PathBuf> {
         return Err(io::Error::from(io::ErrorKind::NotFound));
     }
 
-    if is_targets_exist(&dir, &targets) {
-        return Ok(dir);
-    }
+    let mut queue: VecDeque<(PathBuf, usize)> = VecDeque::new();
 
-    for entry in fs::read_dir(dir)? {
-        let current: PathBuf = entry?.path();
+    queue.push_back((dir, depth));
 
-        if !current.is_dir() {
+    while let Some((current_dir, remaining_depth)) = queue.pop_front() {
+        if is_targets_exist(&current_dir, &targets) {
+            return Ok(current_dir);
+        }
+
+        if remaining_depth <= 1 {
             continue;
         }
 
-        let opts: GetDir = GetDir::new()
-            .dir(current)
-            .depth(depth - 1)
-            .targets(targets.clone());
+        let entries: fs::ReadDir = match fs::read_dir(&current_dir) {
+            | Ok(e) => e,
+            | Err(_) => continue,
+        };
 
-        if let Ok(found) = get_dir(opts) {
-            return Ok(found);
+        for entry in entries.flatten() {
+            let path: PathBuf = entry.path();
+
+            if path.is_dir() {
+                queue.push_back((path, remaining_depth - 1));
+            }
         }
     }
 
