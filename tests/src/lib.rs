@@ -73,24 +73,38 @@ mod tests {
 
     #[test]
     fn test_get_dir_with_depth_limit() {
-        match GetDir::new()
-            .dir(current_dir().unwrap().join("..").join("package"))
-            .depth(1)
-            .target(Target::File(FileTarget::new("lib.rs")))
-            .run()
+        let dir: PathBuf = current_dir().unwrap();
+        let target: Target = Target::File(FileTarget::new("lib.rs"));
+
+        if let Ok(_) =
+            GetDir::new().dir(&dir).depth(1).target(target.clone()).run()
         {
-            | Ok(_) => panic!("Should fail"),
-            | Err(_) => (),
+            panic!("Should fail");
         }
 
-        match GetDir::new()
-            .dir(current_dir().unwrap().join("..").join("package"))
-            .depth(2)
-            .target(Target::File(FileTarget::new("lib.rs")))
-            .run()
+        if let Err(_) = GetDir::new().dir(&dir).depth(2).target(target).run() {
+            panic!("Should succeed");
+        }
+    }
+
+    #[test]
+    fn test_get_dir_reverse_with_depth_limit() {
+        let dir: PathBuf = current_dir().unwrap();
+        let target: Target = Target::File(FileTarget::new("Cargo.lock"));
+
+        if let Ok(_) = GetDir::new()
+            .dir(&dir)
+            .depth(1)
+            .target(target.clone())
+            .run_reverse()
         {
-            | Ok(_) => (),
-            | Err(_) => panic!("Should succeed"),
+            panic!("Should fail");
+        }
+
+        if let Err(_) =
+            GetDir::new().dir(&dir).depth(2).target(target).run_reverse()
+        {
+            panic!("Should succeed");
         }
     }
 }
