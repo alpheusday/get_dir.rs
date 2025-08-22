@@ -12,7 +12,7 @@
 
 ### What's Changed
 
-- Speed optimization
+- Performance optimizations
 
 ### Migrating from 0.4.X to 0.5.0
 
