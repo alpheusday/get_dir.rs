@@ -3,13 +3,15 @@ mod tests {
 
     use std::{env::current_dir, path::PathBuf};
 
-    use tokio::fs::read_to_string;
+    use macro_rules_attribute::apply;
+    use smol::fs::read_to_string;
+    use smol_macros::test;
 
     use get_dir::{
-        DirTarget, FileTarget, GetDir, Target, tokio::GetDirAsyncExt,
+        DirTarget, FileTarget, GetDir, Target, smol::GetDirAsyncExt,
     };
 
-    #[tokio::test]
+    #[apply(test)]
     async fn test_get_dir_by_target_dir() {
         let dir: PathBuf = GetDir::new()
             .target(Target::Dir(DirTarget::new("src")))
@@ -23,7 +25,7 @@ mod tests {
         assert!(content.contains("get_dir = { workspace = true }"));
     }
 
-    #[tokio::test]
+    #[apply(test)]
     async fn test_get_dir_by_target_file() {
         let dir: PathBuf = GetDir::new()
             .target(Target::File(FileTarget::new("Cargo.toml")))
@@ -37,7 +39,7 @@ mod tests {
         assert!(content.contains("get_dir = { workspace = true }"));
     }
 
-    #[tokio::test]
+    #[apply(test)]
     async fn test_get_dir_by_tarrun_reverse_dir() {
         let dir: PathBuf = GetDir::new()
             .target(Target::Dir(DirTarget::new("target")))
@@ -51,7 +53,7 @@ mod tests {
         assert!(content.contains("[workspace.dependencies]"));
     }
 
-    #[tokio::test]
+    #[apply(test)]
     async fn test_get_dir_by_tarrun_reverse_file() {
         let dir: PathBuf = GetDir::new()
             .target(Target::File(FileTarget::new("LICENSE")))
@@ -65,7 +67,7 @@ mod tests {
         assert!(content.contains("[workspace.dependencies]"));
     }
 
-    #[tokio::test]
+    #[apply(test)]
     async fn test_get_dir_by_target_file_in_specific_dir() {
         let dir: PathBuf = GetDir::new()
             .dir(current_dir().unwrap().join("..").join("package"))
@@ -79,7 +81,7 @@ mod tests {
         assert!(content.contains("# Get Dir"));
     }
 
-    #[tokio::test]
+    #[apply(test)]
     async fn test_get_dir_with_depth_limit() {
         let dir: PathBuf = current_dir().unwrap();
         let target: Target = Target::File(FileTarget::new("lib.rs"));
@@ -99,7 +101,7 @@ mod tests {
         }
     }
 
-    #[tokio::test]
+    #[apply(test)]
     async fn test_get_dir_reverse_with_depth_limit() {
         let dir: PathBuf = current_dir().unwrap();
         let target: Target = Target::File(FileTarget::new("Cargo.lock"));

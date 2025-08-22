@@ -3,7 +3,7 @@ __MACOSX/
 .DS_Store
 
 # Builds
-target/
+/target/
 
 # Logs
 *.log

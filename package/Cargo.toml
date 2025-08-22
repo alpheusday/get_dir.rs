@@ -1,6 +1,6 @@
 [package]
 name = "get_dir"
-version = "0.4.3"
+version = "0.5.0"
 authors = ["Alpheus <contact@alphe.us>"]
 edition = "2024"
 rust-version = "1.85.0"
@@ -34,6 +34,10 @@ features = ["all"]
 workspace = true
 optional = true
 
+[dependencies.smol]
+workspace = true
+optional = true
+
 [dependencies.tokio]
 workspace = true
 optional = true
@@ -43,5 +47,6 @@ features = ["fs", "io-util"]
 default = []
 async_std = ["dep:async-std"]
 async-std = ["async_std"]
+smol = ["dep:smol"]
 tokio = ["dep:tokio"]
-all = ["async_std", "tokio"]
+all = ["async_std", "smol", "tokio"]

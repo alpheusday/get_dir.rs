@@ -1,0 +1,303 @@
+#[cfg(feature = "async_std")]
+pub mod async_std;
+
+#[cfg(feature = "smol")]
+pub mod smol;
+
+#[cfg(feature = "tokio")]
+pub mod tokio;
+
+use std::{
+    collections::VecDeque,
+    env::current_dir,
+    fs, io,
+    path::{Path, PathBuf},
+};
+
+use crate::structs::target::Target;
+
+fn is_target_exists(
+    path: &Path,
+    target: &Target,
+) -> bool {
+    match target {
+        | Target::Dir(tg) => path.join(&tg.name).is_dir(),
+        | Target::File(tg) => path.join(&tg.name).is_file(),
+    }
+}
+
+pub(crate) fn is_targets_exist(
+    dir: &Path,
+    targets: &[Target],
+) -> bool {
+    targets.iter().any(|t| is_target_exists(dir, t))
+}
+
+fn get_dir(options: GetDir) -> io::Result<PathBuf> {
+    let GetDir { dir, depth, targets } = options;
+
+    if depth == 0 {
+        return Err(io::Error::from(io::ErrorKind::NotFound));
+    }
+
+    let mut queue: VecDeque<(PathBuf, usize)> = VecDeque::new();
+
+    queue.push_back((dir, depth));
+
+    while let Some((current_dir, remaining_depth)) = queue.pop_front() {
+        if is_targets_exist(&current_dir, &targets) {
+            return Ok(current_dir);
+        }
+
+        if remaining_depth <= 1 {
+            continue;
+        }
+
+        let entries: fs::ReadDir = match fs::read_dir(&current_dir) {
+            | Ok(e) => e,
+            | Err(_) => continue,
+        };
+
+        for entry in entries.flatten() {
+            let path: PathBuf = entry.path();
+
+            if path.is_dir() {
+                queue.push_back((path, remaining_depth - 1));
+            }
+        }
+    }
+
+    Err(io::Error::from(io::ErrorKind::NotFound))
+}
+
+fn get_dir_reverse(options: GetDir) -> io::Result<PathBuf> {
+    let GetDir { dir, depth, targets } = options;
+
+    for (i, ancestor) in dir.ancestors().enumerate() {
+        if i >= depth {
+            break;
+        }
+
+        if is_targets_exist(ancestor, &targets) {
+            return Ok(ancestor.to_path_buf());
+        }
+    }
+
+    Err(io::Error::from(io::ErrorKind::NotFound))
+}
+
+/// Utility to get directory.
+///
+/// ## Example
+///
+/// ```no_run
+/// use std::path::PathBuf;
+///
+/// use get_dir::{
+///     GetDir,
+///     Target,
+///     DirTarget,
+/// };
+///
+/// let path: PathBuf = GetDir::new()
+///     .target(
+///         Target::Dir(DirTarget::new("src")),
+///     )
+///     .run()
+///     .unwrap();
+/// ```
+#[derive(Debug, Clone)]
+pub struct GetDir {
+    /// The directory to run the process.
+    pub dir: PathBuf,
+    /// The depth of the search.
+    pub depth: usize,
+    /// The targets to search.
+    pub targets: Vec<Target>,
+}
+
+impl GetDir {
+    /// Create a new GetDir instance.
+    ///
+    /// ## Example
+    ///
+    /// ```no_run
+    /// use std::path::PathBuf;
+    ///
+    /// use get_dir::GetDir;
+    ///
+    /// let path: PathBuf = GetDir::new()
+    ///     .run()
+    ///     .unwrap();
+    /// ```
+    pub fn new() -> Self {
+        GetDir {
+            dir: match current_dir() {
+                | Ok(path) => path,
+                | Err(_) => PathBuf::new(),
+            },
+            depth: usize::MAX,
+            targets: Vec::new(),
+        }
+    }
+
+    /// Specific the directory to run the process.
+    ///
+    /// By default, it runs in current directory.
+    ///
+    /// ## Example
+    ///
+    /// ```no_run
+    /// use std::path::{
+    ///     Path,
+    ///     PathBuf,
+    /// };
+    ///
+    /// use get_dir::GetDir;
+    ///
+    /// let path: PathBuf = GetDir::new()
+    ///     .directory(Path::new(".").join("src"))
+    ///     .run()
+    ///     .unwrap();
+    /// ```
+    pub fn directory<D: Into<PathBuf>>(
+        mut self,
+        dir: D,
+    ) -> Self {
+        self.dir = dir.into();
+        self
+    }
+
+    /// Alias for [`GetDir::directory`] function.
+    pub fn dir<D: Into<PathBuf>>(
+        mut self,
+        dir: D,
+    ) -> Self {
+        self.dir = dir.into();
+        self
+    }
+
+    /// Set the depth of the search.
+    ///
+    /// By default, it is [`usize::MAX`].
+    ///
+    /// ## Example
+    ///
+    /// ```no_run
+    /// use std::path::PathBuf;
+    ///
+    /// use get_dir::GetDir;
+    ///
+    /// let path: PathBuf = GetDir::new()
+    ///     .depth(2)
+    ///     .run()
+    ///     .unwrap();
+    /// ```
+    pub fn depth(
+        mut self,
+        depth: usize,
+    ) -> Self {
+        self.depth = depth;
+        self
+    }
+
+    /// Add targets to the search.
+    ///
+    /// ## Example
+    ///
+    /// ```no_run
+    /// use std::path::PathBuf;
+    ///
+    /// use get_dir::{
+    ///     GetDir,
+    ///     Target,
+    ///     DirTarget,
+    ///     FileTarget,
+    /// };
+    ///
+    /// let path: PathBuf = GetDir::new()
+    ///     .targets([
+    ///         Target::Dir(DirTarget::new("src")),
+    ///         Target::File(FileTarget::new("Cargo.toml")),
+    ///     ])
+    ///     .run()
+    ///     .unwrap();
+    /// ```
+    pub fn targets<TS, T>(
+        mut self,
+        targets: TS,
+    ) -> Self
+    where
+        TS: IntoIterator<Item = T>,
+        T: Into<Target>,
+    {
+        self.targets.extend(targets.into_iter().map(|t| t.into()));
+        self
+    }
+
+    /// Add a target to the search.
+    ///
+    /// ## Example
+    ///
+    /// ```no_run
+    /// use std::path::PathBuf;
+    ///
+    /// use get_dir::{
+    ///     GetDir,
+    ///     Target,
+    ///     DirTarget,
+    /// };
+    ///
+    /// let path: PathBuf = GetDir::new()
+    ///     .target(Target::Dir(DirTarget::new("src")))
+    ///     .run()
+    ///     .unwrap();
+    /// ```
+    pub fn target(
+        mut self,
+        target: Target,
+    ) -> Self {
+        self.targets.push(target);
+        self
+    }
+
+    /// Get the first directory containing any of the specified targets.
+    ///
+    /// ## Example
+    ///
+    /// ```no_run
+    /// use std::path::PathBuf;
+    ///
+    /// use get_dir::GetDir;
+    ///
+    /// let path: PathBuf = GetDir::new()
+    ///     .run()
+    ///     .unwrap();
+    /// ```
+    pub fn run(self) -> io::Result<PathBuf> {
+        get_dir(self)
+    }
+
+    /// Get the first directory containing any of the specified targets in reverse.
+    ///
+    /// ## Example
+    ///
+    /// ```no_run
+    /// use std::path::PathBuf;
+    ///
+    /// use get_dir::GetDir;
+    ///
+    /// let path: PathBuf = GetDir::new()
+    ///     .run_reverse()
+    ///     .unwrap();
+    /// ```
+    pub fn run_reverse(self) -> io::Result<PathBuf> {
+        get_dir_reverse(self)
+    }
+}
+
+impl Default for GetDir {
+    fn default() -> Self {
+        GetDir::new()
+    }
+}

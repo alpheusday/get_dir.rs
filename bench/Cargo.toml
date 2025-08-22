@@ -1,0 +1,14 @@
+[package]
+name = "bench"
+edition = "2024"
+publish = false
+
+[[bench]]
+name = "bench"
+harness = false
+
+[dependencies]
+async-std = { workspace = true }
+criterion = { workspace = true, features = ["async_std", "async_smol", "async_tokio"]}
+get_dir = { workspace = true }
+tokio = { workspace = true }

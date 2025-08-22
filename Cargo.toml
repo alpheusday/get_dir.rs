@@ -3,10 +3,15 @@ resolver = "2"
 members = [
     "package",
     "tests",
+    "bench",
 ]
 
 [workspace.dependencies]
 async-std = "^1.13.0"
+criterion = "~0.7.0"
+macro_rules_attribute = "~0.2.2"
+smol = "^2.0.0"
+smol-macros = "~0.1.1"
 tokio = "^1.40.0"
 
 [workspace.dependencies.get_dir]
