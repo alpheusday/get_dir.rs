@@ -82,6 +82,10 @@ let path: PathBuf = GetDir::new()
 
 For resolving the root of a workspace, consider using the [`workspace_root`](https://github.com/alpheusday/workspace_root.rs) library.
 
+## Contributing
+
+For contributing, please refer to the [contributing guide](./CONTRIBUTING.md).
+
 ## License
 
 This project is licensed under the terms of the MIT license.
