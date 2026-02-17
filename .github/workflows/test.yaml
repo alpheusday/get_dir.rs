@@ -1,0 +1,44 @@
+name: Test
+
+on:
+    pull_request:
+        branches:
+            - main
+    push:
+        branches:
+            - main
+
+jobs:
+    node:
+        name: ${{ matrix.os.name }} / Rust ${{ matrix.rust.name }}
+        runs-on: ${{ matrix.os.code }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                os:
+                    - name: Linux
+                      code: ubuntu-latest
+                    - name: macOS
+                      code: macos-latest
+                    - name: Windows
+                      code: windows-latest
+                rust:
+                    - name: "1.85.0"
+                      code: "1.85.0"
+                    - name: Stable
+                      code: stable
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Install just
+              uses: extractions/setup-just@v3
+
+            - name: Setup Rust
+              uses: actions-rust-lang/setup-rust-toolchain@v1
+              with:
+                  toolchain: ${{ matrix.rust.code }}
+
+            - name: Run tests
+              run: just test

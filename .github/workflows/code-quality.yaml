@@ -1,0 +1,32 @@
+name: Code Quality
+
+on:
+    pull_request:
+    push:
+
+jobs:
+    lint:
+        name: Lint
+        runs-on: macos-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Install just
+              uses: extractions/setup-just@v3
+
+            - name: Setup Rust
+              uses: actions-rust-lang/setup-rust-toolchain@v1
+              with:
+                  toolchain: "1.85.0"
+                  components: clippy
+
+            - name: Install ls-lint
+              run: brew install ls-lint
+
+            - name: Install typos-cli
+              run: brew install typos-cli
+
+            - name: Run linters
+              run: just lint
