@@ -1,5 +1,5 @@
 set shell := ["bash", "-cu"]
-set windows-shell := ["powershell"]
+set windows-shell := ["pwsh", "-Command"]
 
 # Default action
 _:
@@ -9,7 +9,7 @@ _:
 
 # Lint code
 lint:
-    ls-lint
+    ls-lint -config ./.ls-lint.yaml
     typos
     cargo check
     cargo clippy
