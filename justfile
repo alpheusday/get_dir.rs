@@ -14,8 +14,7 @@ ls-lint:
     ls-lint -config ./.ls-lint.yaml
 
 # Lint code with ls-lint
-lslint:
-    just ls-lint
+lslint: ls-lint
 
 # Lint code with typos-cli
 typos:
@@ -23,9 +22,6 @@ typos:
 
 # Lint code
 lint:
-    just lslint
-    just typos
-    cargo check
     cargo clippy
     cargo test -p get_dir --features all -- --nocapture
 
@@ -34,10 +30,7 @@ test:
     cargo test -p tests -- --nocapture
 
 # Check code
-check:
-    just fmt
-    just lint
-    just test
+check: fmt ls-lint typos lint test
 
 # Run benchmark
 bench:
